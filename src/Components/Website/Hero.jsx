@@ -2,7 +2,7 @@ import React from 'react';
 
 const HeroSection = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 relative overflow-hidden px-[168px]">
+    <div className="hero-bg h-auto relative overflow-hidden px-[168px]">
       {/* Background decorative elements */}
       <div className="absolute top-20 right-20 w-16 h-16 bg-purple-100 rounded-full opacity-60"></div>
       <div className="absolute top-40 right-40 w-8 h-8 bg-purple-200 rounded-full opacity-80"></div>
@@ -19,7 +19,7 @@ const HeroSection = () => {
             </div>
             
             {/* Main Heading */}
-            <div className="space-y-2">
+            <div className="">
               <h1 className="text-5xl lg:text-6xl font-bold text-dark leading-tight">
                 Discover.
               </h1>
@@ -30,21 +30,21 @@ const HeroSection = () => {
             </div>
             
             {/* Description */}
-            <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
+            <p className="text-lg text-grey leading-relaxed max-w-lg">
               The ultimate event ticketing platform that makes discovering amazing events 
               and purchasing tickets as easy as a few taps. Save towards your dream 
               events and never miss out again.
             </p>
             
             {/* CTA Button */}
-            <button className="bg-primary hover:bg-purple-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
+            <button className="bg-primary hover:bg-purple-700 text-white font-semibold px-16 py-3 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
               Discover Events
             </button>
             
             {/* Stats */}
             <div className="flex space-x-12 pt-8">
               <div>
-                <div className="text-3xl font-bold text-gray-900">3000 +</div>
+                <div className="text-3xl font-bold text-gray-900">3000+</div>
                 <div className="text-sm text-gray-600">Events Hosted</div>
               </div>
               <div>

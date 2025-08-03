@@ -1,10 +1,25 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --color-primary: #6300FE;
   --color-secondary: #9487A8;
   --color-white: #fff;
-  ---color--offwhite: #F7F5FA;
-  --color--dark:#201433;
-  --color--linear: #4501b1;
+  --color-offwhite: #F7F5FA;  
+  --color-dark: #201433;      
+  --color-linear: #4501b1; 
+  --color-grey: #5E5073;   
+}
+
+body {
+  font-family: 'Satoshi', sans-serif;
+}
+
+
+.hero-bg{
+  background-image: url("/assets/Hero Bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
 }
