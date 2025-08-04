@@ -2,14 +2,14 @@ import React from 'react';
 
 const HeroSection = () => {
   return (
-    <div className="hero-bg h-auto relative overflow-hidden px-[168px]">
+    <div className="hero-bg h-auto relative overflow-hidden px-[168px] w-full">
       {/* Background decorative elements */}
       <div className="absolute top-20 right-20 w-16 h-16 bg-purple-100 rounded-full opacity-60"></div>
       <div className="absolute top-40 right-40 w-8 h-8 bg-purple-200 rounded-full opacity-80"></div>
       <div className="absolute bottom-40 left-20 w-12 h-12 bg-pink-100 rounded-full opacity-60"></div>
       
       <div className="container mx-auto px-6 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center justify-center">
           {/* Left Content */}
           <div className="space-y-8">
             {/* Badge */}

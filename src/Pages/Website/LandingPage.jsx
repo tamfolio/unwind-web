@@ -5,6 +5,11 @@ import Partners from '../../Components/Website/Partners'
 import DiscoverEvents from '../../Components/Website/DiscoverEvents'
 import CustomerBenefits from '../../Components/Website/CustomerBenefits'
 import HowItWorks from '../../Components/Website/HowItWorks'
+import Trusted from '../../Components/Website/Trusted'
+import UserFeedback from '../../Components/Website/UserFeedback'
+import Security from '../../Components/Website/Security'
+import StayInLoop from '../../Components/Website/StayInLoop'
+import Footer from '../../Components/Website/Footer'
 
 function LandingPage() {
   return (
@@ -15,6 +20,11 @@ function LandingPage() {
       <DiscoverEvents/>
       <CustomerBenefits/>
       <HowItWorks/>
+      <Trusted/>
+      <UserFeedback/>
+      <Security/>
+      <StayInLoop/>
+      <Footer/>
     </div>
   )
 }
