@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function Navbar() {
   return (
@@ -6,7 +7,7 @@ function Navbar() {
         <img src="/assets/logo.png" alt="" />
         <div className='flex gap-8 text-[14px] text-[#9487A8] font-medium'>
             <span className='text-primary'>Home</span>
-            <span>Discover Events</span>
+            <Link to='/discover-events'>Discover Events</Link>
             <span>How It Works</span>
             <span>Pricing</span>
             <span>Blog</span>
