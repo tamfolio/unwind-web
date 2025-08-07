@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AllEvents() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [locationFilter, setLocationFilter] = useState('Location');
@@ -25,7 +27,7 @@ function AllEvents() {
       id: 2,
       title: 'Summer Music Festival',
       date: 'Jun 15, 2025',
-      location: 'Olympia, Lagos Lagos',
+      location: 'Olympia, Lagos',
       price: 'Free',
       type: 'free',
       category: 'Music',
@@ -43,44 +45,56 @@ function AllEvents() {
     },
     {
       id: 4,
-      title: 'Tech Conference 2025',
-      date: 'May 25, 2025',
-      location: 'San Antonio, Lagos',
-      price: '₦5,000',
+      title: 'Gaming Championship',
+      date: 'Aug 12, 2025',
+      location: 'Victoria Island, Lagos',
+      price: '₦3,500',
       type: 'paid',
-      category: 'Technology',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop'
+      category: 'Gaming',
+      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop'
     },
     {
       id: 5,
-      title: 'Summer Music Festival',
-      date: 'Jun 15, 2025',
-      location: 'Olympia, Lagos Lagos',
-      price: 'Free',
-      type: 'free',
-      category: 'Music',
-      image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=250&fit=crop'
+      title: 'Food & Wine Festival',
+      date: 'Sep 5, 2025',
+      location: 'Ikoyi, Lagos',
+      price: '₦4,000',
+      type: 'paid',
+      category: 'Food & Drinks',
+      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=250&fit=crop'
     },
     {
       id: 6,
-      title: 'Business Leadership Summit',
-      date: 'Jul 8, 2025',
-      location: 'Airport Road, Benin City',
-      price: '₦2,000',
-      type: 'paid',
-      category: 'Business',
-      image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=250&fit=crop'
+      title: 'Sports Meet 2025',
+      date: 'Oct 20, 2025',
+      location: 'National Stadium, Abuja',
+      price: 'Free',
+      type: 'free',
+      category: 'Sports',
+      image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=250&fit=crop'
     }
   ];
 
-  // Duplicate events to show more items like in your design
+  // Duplicate events to show more items
   const allEvents = [...events, ...events, ...events];
 
+  // Filter events based on search and category
   const filteredEvents = allEvents.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = selectedFilter === 'All' || event.category === selectedFilter;
     return matchesSearch && matchesFilter;
   });
+
+  // Handle event card click
+  const handleEventClick = (eventId) => {
+    navigate(`/discover-events/${eventId}`);
+  };
+
+  // Handle buy now button click (prevent event propagation)
+  const handleBuyNowClick = (e, eventId) => {
+    e.stopPropagation(); // Prevent triggering the card click
+    navigate(`/discover-events/${eventId}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -202,7 +216,11 @@ function AllEvents() {
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredEvents.map((event, index) => (
-            <div key={`${event.id}-${index}`} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+            <div 
+              key={`${event.id}-${index}`} 
+              onClick={() => handleEventClick(event.id)}
+              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105"
+            >
               {/* Event Image */}
               <div className="relative">
                 <img 
@@ -217,7 +235,10 @@ function AllEvents() {
                     {event.type === 'free' ? 'Free' : 'Paid'}
                   </span>
                 </div>
-                <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-white transition-colors">
+                <button 
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                >
                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
@@ -248,7 +269,10 @@ function AllEvents() {
                   <div className="text-2xl font-bold text-purple-600">
                     {event.price}
                   </div>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">
+                  <button 
+                    onClick={(e) => handleBuyNowClick(e, event.id)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+                  >
                     Buy Now
                   </button>
                 </div>
