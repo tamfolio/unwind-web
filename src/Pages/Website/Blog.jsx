@@ -235,28 +235,7 @@ const BlogPage = () => {
             </button>
           </div>
         )}
-      </div>
-
-      {/* Newsletter Section */}
-      <div className="bg-gradient-to-br from-purple-600 via-purple-500 to-purple-700 text-white py-16">
-        <div className="max-w-2xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Stay in the Loop</h2>
-          <p className="text-lg opacity-90 mb-8">
-            Subscribe to our newsletter and get fresh insights delivered to your inbox
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
-            />
-            <button className="bg-white text-purple-600 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </div>
+      </div> 
     </div>
   );
 };

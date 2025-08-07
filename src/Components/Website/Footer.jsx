@@ -1,41 +1,49 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLinkClick = () => {
+    scrollToTop();
+  };
   const quickLinks = [
-    { name: 'Discover Events', href: '/events' },
-    { name: 'How It Works', href: '/how-it-works' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Contact Us', href: '/contact' },
-    { name: 'FAQ', href: '/faq' }
+    { name: 'Discover Events', href: '/discover-events' }, // Updated to match your route
+    { name: 'How It Works', href: '/how-it-works' }, // Keep as placeholder
+    { name: 'Pricing', href: '/pricing' }, // Keep as placeholder
+    { name: 'Blog', href: '/blog' }, // Updated to match your route
+    { name: 'Contact Us', href: '/contact' }, // Keep as placeholder
+    { name: 'FAQ', href: '/faq' } // Keep as placeholder
   ];
 
   const legalLinks = [
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms & Conditions', href: '/terms' },
-    { name: 'Refund Policy', href: '/refund' }
+    { name: 'Privacy Policy', href: '/privacy' }, // Keep as placeholder
+    { name: 'Terms & Conditions', href: '/terms' }, // Keep as placeholder
+    { name: 'Refund Policy', href: '/refund' } // Keep as placeholder
   ];
 
   const socialLinks = [
     {
       name: 'LinkedIn',
       href: '#',
-      icon: 'assets/Frame (2).png'
+      icon: '/assets/Frame (2).png'
     },
     {
-      name: 'Facebook',
+      name: 'Facebook', 
       href: '#',
-      icon: 'assets/Frame (2).png'
+      icon: '/assets/Frame (2).png'
     },
     {
       name: 'Instagram',
       href: '#',
-      icon: 'assets/Frame (2).png'
+      icon: '/assets/Frame (2).png'
     },
     {
       name: 'Twitter',
       href: '#',
-      icon: 'assets/Frame (2).png'
+      icon: '/assets/Frame (2).png'
     }
   ];
 
@@ -48,7 +56,9 @@ function Footer() {
           <div className="lg:col-span-2">
             {/* Logo */}
             <div className="mb-6">
-                <img src="/assets/logo2.png" alt="" />
+              <Link to="/" onClick={handleLinkClick}>
+                <img src="/assets/logo2.png" alt="Unwind Logo" />
+              </Link>
             </div>
             
             {/* Description */}
@@ -67,7 +77,7 @@ function Footer() {
                   className="text-white hover:text-white transition-colors duration-200"
                   aria-label={social.name}
                 >
-                  {social.icon}
+                  <img src={social.icon} alt={social.name} className="w-6 h-6" />
                 </a>
               ))}
             </div>
@@ -79,12 +89,20 @@ function Footer() {
             <ul className="space-y-4">
               {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-300 hover:text-white transition-colors duration-200"
-                  >
-                    {link.name}
-                  </a>
+                  {/* Use Link component for routes that exist, regular anchor for placeholders */}
+                  {link.href === '/discover-events' || link.href === '/blog' ? (
+                    <Link
+                      to={link.href}
+                      onClick={handleLinkClick}
+                      className="text-gray-300 hover:text-white transition-colors duration-200"
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <span className="text-gray-500 cursor-not-allowed">
+                      {link.name} (Coming Soon)
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -96,12 +114,9 @@ function Footer() {
             <ul className="space-y-4">
               {legalLinks.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-300 hover:text-white transition-colors duration-200"
-                  >
-                    {link.name}
-                  </a>
+                  <span className="text-gray-500 cursor-not-allowed">
+                    {link.name} (Coming Soon)
+                  </span>
                 </li>
               ))}
             </ul>
@@ -112,7 +127,7 @@ function Footer() {
         <div className="border-t border-gray-700 pt-8">
           {/* Copyright */}
           <div className="text-center">
-          <p className="text-gray-400">
+            <p className="text-gray-400">
               © {new Date().getFullYear()} Unwind. All rights reserved. Built with{' '}
               <span className="text-red-500">❤️</span>{' '}
               for event lovers everywhere.

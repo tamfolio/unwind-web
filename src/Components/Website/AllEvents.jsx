@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 function AllEvents() {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [locationFilter, setLocationFilter] = useState('Location');
   const [priceFilter, setPriceFilter] = useState('Price');
   const [dateFilter, setDateFilter] = useState('Date');
 
-  const filterTabs = ['All', 'Music', 'Technology', 'Sports', 'Business', 'Food & Drinks', 'Gaming'];
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const filterTabs = ['All', 'Music', 'Tech', 'Sports', 'Business', 'Food & Drinks', 'Gaming'];
 
   // Sample events data
   const events = [
@@ -20,7 +23,7 @@ function AllEvents() {
       location: 'San Antonio, Lagos',
       price: '₦5,000',
       type: 'paid',
-      category: 'Technology',
+      category: 'Tech',
       image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop'
     },
     {
@@ -87,13 +90,16 @@ function AllEvents() {
 
   // Handle event card click
   const handleEventClick = (eventId) => {
-    navigate(`/discover-events/${eventId}`);
+    // In a real app, this would use navigate(`/discover-events/${eventId}`)
+    console.log(`Navigate to event ${eventId}`);
+    alert(`This would navigate to event details for event ${eventId}`);
   };
 
   // Handle buy now button click (prevent event propagation)
   const handleBuyNowClick = (e, eventId) => {
     e.stopPropagation(); // Prevent triggering the card click
-    navigate(`/discover-events/${eventId}`);
+    console.log(`Buy ticket for event ${eventId}`);
+    alert(`This would start checkout process for event ${eventId}`);
   };
 
   return (
@@ -153,7 +159,7 @@ function AllEvents() {
                 <span className="flex items-center gap-2">
                   {tab === 'All' && '🎯'}
                   {tab === 'Music' && '🎵'}
-                  {tab === 'Technology' && '💻'}
+                  {tab === 'Tech' && '💻'}
                   {tab === 'Sports' && '⚽'}
                   {tab === 'Business' && '👔'}
                   {tab === 'Food & Drinks' && '🍽️'}
@@ -228,11 +234,10 @@ function AllEvents() {
                   alt={event.title}
                   className="w-full h-48 object-cover"
                 />
+                {/* FIXED: Show category instead of paid/free */}
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    event.type === 'free' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {event.type === 'free' ? 'Free' : 'Paid'}
+                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-white/90 text-gray-700">
+                    {event.category}
                   </span>
                 </div>
                 <button 
@@ -273,7 +278,7 @@ function AllEvents() {
                     onClick={(e) => handleBuyNowClick(e, event.id)}
                     className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
                   >
-                    Buy Now
+                    {event.type === 'free' ? 'Get Ticket' : 'Buy Now'}
                   </button>
                 </div>
               </div>
@@ -281,12 +286,27 @@ function AllEvents() {
           ))}
         </div>
 
+        {/* Show no results message */}
+        {filteredEvents.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-lg mb-4">No events found matching your criteria.</p>
+            <button 
+              onClick={() => {setSearchTerm(''); setSelectedFilter('All');}}
+              className="text-purple-600 hover:text-purple-700 font-medium"
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
+
         {/* Load More Button */}
-        <div className="text-center mt-12">
-          <button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
-            Load More Events
-          </button>
-        </div>
+        {filteredEvents.length > 0 && (
+          <div className="text-center mt-12">
+            <button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
+              Load More Events
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
