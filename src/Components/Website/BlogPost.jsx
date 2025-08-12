@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const BlogPost = () => {
   // For demo purposes, we'll use ID 1. In a real app, you'd get this from useParams()
   const id = 1;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   
   // Sample blog data - in a real app, you'd fetch this based on the ID
   const blogPosts = {
@@ -95,9 +101,8 @@ const BlogPost = () => {
   };
 
   const handleReadMore = (postId) => {
-    // In a real app, this would use navigate(`/blog/${postId}`)
-    console.log(`Navigate to blog/${postId}`);
-    alert(`This would navigate to blog post ${postId}`);
+    // Navigate to individual blog post page
+    navigate(`/blog/${postId}`);
   };
 
   if (!post) {
@@ -122,13 +127,14 @@ const BlogPost = () => {
       {/* Back Button */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-6 py-4">
+          <Link to='/blog'>
           <button 
-            onClick={handleBackClick}
             className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </button>
+          </Link>
         </div>
       </div>
 
@@ -207,11 +213,12 @@ const BlogPost = () => {
           
           <div className="grid md:grid-cols-3 gap-8">
             {relatedArticles.map((article) => (
-              <article key={article.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-200">
+              <article key={article.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-200" onClick={() => handleReadMore(article.id)}>
                 <img 
                   src={article.image}
                   alt={article.title}
                   className="w-full h-48 object-cover"
+                  onClick={() => handleReadMore(article.id)}
                 />
                 
                 <div className="p-6">

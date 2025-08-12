@@ -186,7 +186,7 @@ const BlogPage = () => {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPosts.map((post) => (
-            <article key={post.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <article key={post.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow" onClick={() => handleReadMore(post.id)}>
               <img 
                 src={post.image} 
                 alt={post.title}

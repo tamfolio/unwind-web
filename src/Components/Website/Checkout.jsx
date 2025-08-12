@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Calendar, MapPin } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,10 @@ function Checkout() {
     email: '',
     phoneNumber: ''
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Sample event data (you can get this from props, context, or API)
   const eventData = {
@@ -205,7 +209,7 @@ function Checkout() {
               onClick={handleSubmit}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 rounded-lg transition-colors duration-200 mb-4"
             >
-              Buy Ticket
+              Buy Now
             </button>
 
             {/* Security Notice */}

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const DiscoverEvents = () => {
   const [activeCategory, setActiveCategory] = useState("All");
+  const navigate = useNavigate();
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -90,6 +92,7 @@ const DiscoverEvents = () => {
 
   const handleEventClick = (eventId) => {
     // Navigate to event details - you can replace this with your routing logic
+    navigate(`/discover-events/${eventId}`)
     console.log(`Navigate to event ${eventId}`);
     // In a real app: navigate(`/discover-events/${eventId}`);
   };
@@ -148,7 +151,7 @@ const DiscoverEvents = () => {
                   </span>
                 </div>
                 {/* Bookmark Icon */}
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-lg p-2 hover:bg-white transition-colors">
+                {/* <div className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-lg p-2 hover:bg-white transition-colors">
                   <svg
                     className="w-5 h-5 text-gray-600"
                     fill="none"
@@ -162,7 +165,11 @@ const DiscoverEvents = () => {
                       d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
                     />
                   </svg>
+                </div> */}
+                <div className="w-[32px] h-[32px] bg-[rgba(255,255,255,0.4)] absolute top-4 right-4 rounded-[8px] flex items-center justify-center">
+                  <img src="/assets/book-saved.png" alt="" />
                 </div>
+                
               </div>
 
               {/* Event Content */}
@@ -217,7 +224,7 @@ const DiscoverEvents = () => {
                       handleEventClick(event.id);
                     }}
                   >
-                    {event.isPaid ? "Buy Ticket" : "Get Ticket"}
+                    {event.isPaid ? "" : "Get Ticket"}
                   </button>
                 </div>
               </div>

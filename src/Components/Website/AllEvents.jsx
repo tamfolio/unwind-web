@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AllEvents() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -6,6 +7,7 @@ function AllEvents() {
   const [locationFilter, setLocationFilter] = useState('Location');
   const [priceFilter, setPriceFilter] = useState('Price');
   const [dateFilter, setDateFilter] = useState('Date');
+  const navigate = useNavigate()
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -91,15 +93,14 @@ function AllEvents() {
   // Handle event card click
   const handleEventClick = (eventId) => {
     // In a real app, this would use navigate(`/discover-events/${eventId}`)
-    console.log(`Navigate to event ${eventId}`);
-    alert(`This would navigate to event details for event ${eventId}`);
+    navigate(`/discover-events/${eventId}`)
   };
 
   // Handle buy now button click (prevent event propagation)
   const handleBuyNowClick = (e, eventId) => {
-    e.stopPropagation(); // Prevent triggering the card click
-    console.log(`Buy ticket for event ${eventId}`);
-    alert(`This would start checkout process for event ${eventId}`);
+    e.stopPropagation(); 
+    navigate(`/checkout`)
+    
   };
 
   return (

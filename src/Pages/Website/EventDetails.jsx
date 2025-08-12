@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Calendar,
@@ -15,6 +15,10 @@ function EventDetails() {
   const navigate = useNavigate();
   const [selectedTicket, setSelectedTicket] = useState("regular");
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Sample events data (in a real app, this would come from an API)
   const eventsData = {
