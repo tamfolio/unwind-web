@@ -23,14 +23,24 @@ function Navbar() {
               Discover Events
             </Link>
             <span>How It Works</span>
-            <span>Pricing</span>
+            <Link 
+              to='/pricing'
+              className={location.pathname.includes('/pricing') ? 'text-primary' : ''}
+            >
+              Pricing
+            </Link>
             <Link 
               to='/blog'
               className={location.pathname.includes('/blog') ? 'text-primary' : ''}
             >
               Blog
             </Link>
-            <span>Contact Us</span>
+            <Link 
+              to='/Contact-us'
+              className={location.pathname.includes('/Contact-us') ? 'text-primary' : ''}
+            >
+              Contact Us
+            </Link>
         </div>
         <div className='flex gap-8'>
             <span className='text-primary border-[1px] border-solid border-primary px-[14px] py-[10px] rounded-[8px] text-[14px] font-medium cursor-pointer'>Sign In</span>

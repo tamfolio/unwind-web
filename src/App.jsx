@@ -6,6 +6,8 @@ import EventDetails from "./Pages/Website/EventDetails";
 import Checkout from "./Components/Website/Checkout";
 import BlogPage from "./Pages/Website/Blog";
 import BlogPost from "./Components/Website/BlogPost";
+import ContactUs from "./Pages/Website/ContactUs";
+import Pricing from "./Pages/Website/Pricing";
 
 // Import other pages as you create them
 // import About from "./Pages/Website/About"
@@ -26,6 +28,8 @@ function App() {
           <Route path="blog" element={<BlogPage />} />
           <Route path="blog/:id" element={<BlogPost />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="Contact-us" element={<ContactUs />} />
+          <Route path="pricing" element={<Pricing />} />
           {/* <Route path="contact" element={<Contact />} /> */}
           {/* <Route path="privacy-policy" element={<PrivacyPolicy />} /> */}
           {/* <Route path="terms-of-use" element={<TermsOfUse />} /> */}

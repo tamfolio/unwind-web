@@ -89,31 +89,34 @@ function EventDetails() {
 
   const relatedEvents = [
     {
-      id: 1,
-      title: "Tech Conference 2025",
-      date: "May 25, 2025",
-      time: "9:00 AM",
-      location: "B Ann Avenue, Lagos",
-      price: 5000,
-      image: "/api/placeholder/300/200",
-    },
-    {
       id: 2,
       title: "Summer Music Festival",
+      category: "Music",
       date: "Jun 15, 2025",
-      time: "4:00 PM",
-      location: "16 Owerinte lands, Lagos",
+      location: "15, Chevron, Lekki, Lagos",
       price: "Free",
-      image: "/api/placeholder/300/200",
+      image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=400&fit=crop",
+      isPaid: false,
     },
     {
       id: 3,
       title: "Business Leadership Summit",
+      category: "Business", 
       date: "Jul 8, 2025",
-      time: "10:00 AM",
-      location: "4 Airport Road, River City",
-      price: 2000,
-      image: "/api/placeholder/300/200",
+      location: "1, Airport Road, Benin City",
+      price: "₦ 2,000",
+      image: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=400&fit=crop",
+      isPaid: true,
+    },
+    {
+      id: 4,
+      title: "Gaming Championship",
+      category: "Gaming",
+      date: "Aug 12, 2025", 
+      location: "10, Victoria Island, Lagos",
+      price: "₦ 1,500",
+      image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=400&fit=crop",
+      isPaid: true,
     },
   ];
 
@@ -122,6 +125,10 @@ function EventDetails() {
       (ticket) => ticket.id === selectedTicket
     );
     return selectedTicketType ? selectedTicketType.price * quantity : 0;
+  };
+
+  const handleRelatedEventClick = (eventId) => {
+    navigate(`/discover-events/${eventId}`);
   };
 
   return (
@@ -346,32 +353,85 @@ function EventDetails() {
             {relatedEvents.map((event) => (
               <div
                 key={event.id}
-                className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                onClick={() => handleRelatedEventClick(event.id)}
+                className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
               >
-                <div className="h-48 bg-gradient-to-r from-blue-400 to-purple-500"></div>
-                <div className="p-4">
-                  <h3 className="font-semibold mb-2">{event.title}</h3>
-                  <div className="flex items-center text-sm text-gray-600 mb-1">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    <span>{event.date}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600 mb-1">
-                    <Clock className="w-4 h-4 mr-1" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600 mb-3">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span>{event.location}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-purple-600">
-                      {typeof event.price === "number"
-                        ? `₦${event.price.toLocaleString()}`
-                        : event.price}
+                {/* Event Image */}
+                <div className="relative h-64">
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Event Category Badge */}
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur rounded-lg px-3 py-1">
+                    <span className="text-sm font-medium text-gray-700">
+                      {event.category}
                     </span>
-                    <button className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition-colors">
-                      Buy Now
-                    </button>
+                  </div>
+                  {/* Bookmark Icon */}
+                  <div className="w-[32px] h-[32px] bg-[rgba(255,255,255,0.4)] absolute top-4 right-4 rounded-[8px] flex items-center justify-center">
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Event Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    {event.title}
+                  </h3>
+
+                  {/* Date */}
+                  <div className="flex items-center space-x-2 mb-3">
+                    <svg
+                      className="w-5 h-5 text-purple-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-gray-600">{event.date}</span>
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex items-center space-x-2 mb-6">
+                    <svg
+                      className="w-5 h-5 text-purple-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-gray-600 text-sm">
+                      {event.location}
+                    </span>
+                  </div>
+
+                  {/* Price and Button */}
+                  <div className="flex items-center justify-between">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {event.price}
+                    </div>
+                    <Link to={`/discover-events/${event.id}`}>
+                      <button
+                        className="bg-purple-600 text-white hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors duration-200"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click when button is clicked
+                        }}
+                      >
+                        {event.isPaid ? "Buy Tickets" : "Get Ticket"}
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -379,7 +439,10 @@ function EventDetails() {
           </div>
 
           <div className="text-center">
-            <button className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={() => navigate("/discover-events")}
+              className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               View All Events
             </button>
           </div>

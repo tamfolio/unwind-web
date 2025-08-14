@@ -224,7 +224,7 @@ const DiscoverEvents = () => {
                       handleEventClick(event.id);
                     }}
                   >
-                    {event.isPaid ? "" : "Get Ticket"}
+                    {event.isPaid ? "Buy Tickets" : "Get Ticket"}
                   </button>
                 </div>
               </div>
