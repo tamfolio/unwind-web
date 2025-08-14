@@ -1,7 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 function Footer() {
+  const location = useLocation();
+  
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -9,19 +11,20 @@ function Footer() {
   const handleLinkClick = () => {
     scrollToTop();
   };
+  
   const quickLinks = [
-    { name: 'Discover Events', href: '/discover-events' }, // Updated to match your route
-    { name: 'How It Works', href: '/how-it-works' }, // Keep as placeholder
-    { name: 'Pricing', href: '/pricing' }, // Keep as placeholder
-    { name: 'Blog', href: '/blog' }, // Updated to match your route
-    { name: 'Contact Us', href: '/contact' }, // Keep as placeholder
-    { name: 'FAQ', href: '/faq' } // Keep as placeholder
+    { name: 'Discover Events', href: '/discover-events', isActive: true }, 
+    { name: 'How It Works', href: '/how-it-works', isActive: false }, 
+    { name: 'Pricing', href: '/pricing', isActive: true }, 
+    { name: 'Blog', href: '/blog', isActive: true }, 
+    { name: 'Contact Us', href: '/Contact-us', isActive: true }, 
+    { name: 'FAQ', href: '/faq', isActive: false } 
   ];
 
   const legalLinks = [
-    { name: 'Privacy Policy', href: '/privacy' }, // Keep as placeholder
-    { name: 'Terms & Conditions', href: '/terms' }, // Keep as placeholder
-    { name: 'Refund Policy', href: '/refund' } // Keep as placeholder
+    { name: 'Privacy Policy', href: '/privacy', isActive: false }, 
+    { name: 'Terms & Conditions', href: '/terms', isActive: false }, 
+    { name: 'Refund Policy', href: '/refund', isActive: false } 
   ];
 
   const socialLinks = [
@@ -89,12 +92,16 @@ function Footer() {
             <ul className="space-y-4">
               {quickLinks.map((link) => (
                 <li key={link.name}>
-                  {/* Use Link component for routes that exist, regular anchor for placeholders */}
-                  {link.href === '/discover-events' || link.href === '/blog' ? (
+                  {link.isActive ? (
                     <Link
                       to={link.href}
                       onClick={handleLinkClick}
-                      className="text-gray-300 hover:text-white transition-colors duration-200"
+                      className={`transition-colors duration-200 ${
+                        location.pathname === link.href || 
+                        (link.href !== '/' && location.pathname.includes(link.href))
+                          ? 'text-primary' 
+                          : 'text-gray-300 hover:text-white'
+                      }`}
                     >
                       {link.name}
                     </Link>
@@ -114,9 +121,23 @@ function Footer() {
             <ul className="space-y-4">
               {legalLinks.map((link) => (
                 <li key={link.name}>
-                  <span className="text-gray-500 cursor-not-allowed">
-                    {link.name} (Coming Soon)
-                  </span>
+                  {link.isActive ? (
+                    <Link
+                      to={link.href}
+                      onClick={handleLinkClick}
+                      className={`transition-colors duration-200 ${
+                        location.pathname === link.href
+                          ? 'text-primary' 
+                          : 'text-gray-300 hover:text-white'
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <span className="text-gray-500 cursor-not-allowed">
+                      {link.name} (Coming Soon)
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

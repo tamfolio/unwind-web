@@ -224,7 +224,7 @@ function Pricing() {
             setup fees. Start today.
           </p>
           
-          <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
+          <button className="bg-[#6300FE]  text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
             Create Your First Event
           </button>
         </div>

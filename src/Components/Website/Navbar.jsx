@@ -22,7 +22,12 @@ function Navbar() {
             >
               Discover Events
             </Link>
-            <span>How It Works</span>
+            <Link 
+              to='/how-it-works'
+              className={location.pathname.includes('/how-it-works') ? 'text-primary' : ''}
+            >
+              How It Works
+            </Link>
             <Link 
               to='/pricing'
               className={location.pathname.includes('/pricing') ? 'text-primary' : ''}
