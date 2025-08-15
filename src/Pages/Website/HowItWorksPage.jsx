@@ -97,80 +97,114 @@ function HowItWorksPage() {
       </section>
 
       {/* For Event Attendees Section */}
-      <section className="py-20">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
+      <section className="py-20 bg-[#F7F5FA]">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">
             For Event Attendees
           </h2>
+          <p className="mb-16 text-center">
+            Discover, save, and enjoy amazing events in just a few steps
+          </p>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Discover Events */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <div className="w-8 h-8 bg-purple-600 rounded-full"></div>
+            <div className="bg-white rounded-xl py-10 px-5 flex flex-col justify-start items-start w-full shadow-[10px_4px_20px_0px_#00000014]">
+              <div className="w-16 h-16 bg-[#F7F5FA] rounded-full flex items-center justify-center mb-6">
+                <img src="/assets/search-favorite.svg" alt="" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="text-xl font-semibold text-gray-900 mb-1">
                 Discover Events
               </h3>
+              <p className="mb-4 text-[#5E5073] font-normal text-sm">
+                Browse thousands of events by category, location, or date. Use
+                our smart search and personalized recommendations to find events
+                you'll love.
+              </p>
               <ul className="space-y-2 text-gray-600">
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Browse curated event listings
                 </li>
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Filter by location and interests
                 </li>
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Get personalized recommendations
                 </li>
               </ul>
             </div>
 
             {/* Save or Buy Instantly */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <div className="w-8 h-8 bg-purple-600 rounded-full"></div>
+            <div className="bg-white rounded-xl py-10 px-5 flex flex-col justify-start items-start w-full shadow-[10px_4px_20px_0px_#00000014]">
+              <div className="w-16 h-16 bg-[#F7F5FA] rounded-full flex items-center justify-center mb-6">
+                <img src="/assets/card-pos.png" alt="" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="text-xl font-semibold text-gray-900 mb-1">
                 Save or Buy Instantly
               </h3>
+              <p className="mb-4 text-[#5E5073] font-normal text-sm">
+                Start saving towards expensive events with our unique savings
+                feature, or buy tickets instantly for immediate events.
+              </p>
               <ul className="space-y-2 text-gray-600">
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   One-click ticket purchasing
                 </li>
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Save events for later
                 </li>
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Secure payment processing
                 </li>
               </ul>
             </div>
 
             {/* Enjoy & Share */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <div className="w-8 h-8 bg-purple-600 rounded-full"></div>
+            <div className="bg-white rounded-xl py-10 px-5 flex flex-col justify-start items-start w-full shadow-[10px_4px_20px_0px_#00000014]">
+              <div className="w-16 h-16 bg-[#F7F5FA] rounded-full flex items-center justify-center mb-6">
+                <img src="/assets/ticket-star.png" alt="" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="text-xl font-semibold text-gray-900 mb-1">
                 Enjoy & Share
               </h3>
+              <p className="mb-4 text-[#5E5073] font-normal text-sm">
+                Get your tickets delivered instantly, enjoy amazing events, and
+                share your experiences with the community.
+              </p>
               <ul className="space-y-2 text-gray-600">
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Digital ticket delivery
                 </li>
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Easy event check-in
                 </li>
                 <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Share with friends
                 </li>
               </ul>
@@ -187,61 +221,39 @@ function HowItWorksPage() {
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
                 Your Personal Event Dashboard
               </h2>
-              <p className="mb-6">Track your saved events, manage your tickets, and discover new experiences all in one place.</p>
+              <p className="mb-6">
+                Track your saved events, manage your tickets, and discover new
+                experiences all in one place.
+              </p>
               <ul className="space-y-4 text-gray-700">
                 <li className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Track your upcoming events
                 </li>
                 <li className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   View purchase history
                 </li>
                 <li className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Manage saved events
                 </li>
                 <li className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                  <div className="w-6 h-6 bg-green-500 rounded-full mr-4 flex items-center justify-center">
+                    <Check className="text-white w-[20px] h-[20px]" />
+                  </div>
                   Get event updates and reminders
                 </li>
               </ul>
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-4">
-                  Upcoming Events
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center p-4 bg-purple-50 rounded-lg">
-                    <div className="w-12 h-12 bg-purple-200 rounded-lg mr-4"></div>
-                    <div>
-                      <div className="font-semibold text-gray-900">
-                        Summer Music Festival
-                      </div>
-                      <div className="text-sm text-gray-600">July 15, 2025</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center p-4 bg-blue-50 rounded-lg">
-                    <div className="w-12 h-12 bg-blue-200 rounded-lg mr-4"></div>
-                    <div>
-                      <div className="font-semibold text-gray-900">
-                        Tech Conference
-                      </div>
-                      <div className="text-sm text-gray-600">July 22, 2025</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center p-4 bg-green-50 rounded-lg">
-                    <div className="w-12 h-12 bg-green-200 rounded-lg mr-4"></div>
-                    <div>
-                      <div className="font-semibold text-gray-900">
-                        Art Gallery Opening
-                      </div>
-                      <div className="text-sm text-gray-600">July 28, 2025</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <img src="/assets/dashboard.png" alt="" />
             </div>
           </div>
         </div>
@@ -391,7 +403,7 @@ function HowItWorksPage() {
             </div>
             <div className="">
               <div className="">
-                <img src="/assets/whole browser.png" alt="" />
+                <img src="/assets/organiser.png" alt="" />
               </div>
             </div>
           </div>
@@ -403,7 +415,7 @@ function HowItWorksPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="">
-              <img src="/assets/whole browser.png" alt="" />
+              <img src="/assets/organiser.png" alt="" />
             </div>
             <div>
               <h2 className="text-4xl font-bold text-gray-900 mb-6">
