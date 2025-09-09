@@ -9,6 +9,9 @@ import BlogPost from "./Components/Website/BlogPost";
 import ContactUs from "./Pages/Website/ContactUs";
 import Pricing from "./Pages/Website/Pricing";
 import HowItWorksPage from "./Pages/Website/HowItWorksPage";
+import SignIn from "./Components/App/Auth/SignIn";
+import ForgotPassword from "./Components/App/Auth/ForgotPassword";
+import SignUp from "./Components/App/Auth/SignUp/SignUp";
 
 // Import other pages as you create them
 // import About from "./Pages/Website/About"
@@ -21,6 +24,9 @@ function App() {
   return (
     <div>
       <Routes>
+        <Route path="/sign-in" element={<SignIn/>}/>
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
+        <Route path="/sign-up" element={<SignUp/>}/>
         {/* Website routes with common layout */}
         <Route path="/" element={<WebsiteLayout />}>
           <Route index element={<LandingPage />} />

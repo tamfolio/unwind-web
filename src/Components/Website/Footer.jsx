@@ -14,7 +14,7 @@ function Footer() {
   
   const quickLinks = [
     { name: 'Discover Events', href: '/discover-events', isActive: true }, 
-    { name: 'How It Works', href: '/how-it-works', isActive: false }, 
+    { name: 'How It Works', href: '/how-it-works', isActive: true }, 
     { name: 'Pricing', href: '/pricing', isActive: true }, 
     { name: 'Blog', href: '/blog', isActive: true }, 
     { name: 'Contact Us', href: '/Contact-us', isActive: true }, 

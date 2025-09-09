@@ -48,8 +48,8 @@ function Navbar() {
             </Link>
         </div>
         <div className='flex gap-8'>
-            <span className='text-primary border-[1px] border-solid border-primary px-[14px] py-[10px] rounded-[8px] text-[14px] font-medium cursor-pointer'>Sign In</span>
-            <span className='text-white border-[1px] bg-primary border-solid border-primary px-[14px] py-[10px] rounded-[8px] text-[14px] font-medium cursor-pointer'>Sign Up</span>
+            <Link to='/sign-in' className='text-primary border-[1px] border-solid border-primary px-[14px] py-[10px] rounded-[8px] text-[14px] font-medium cursor-pointer'>Sign In</Link>
+            <Link to='/sign-up' className='text-white border-[1px] bg-primary border-solid border-primary px-[14px] py-[10px] rounded-[8px] text-[14px] font-medium cursor-pointer'>Sign Up</Link>
         </div>
     </div>
   )
