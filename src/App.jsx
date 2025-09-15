@@ -12,6 +12,7 @@ import HowItWorksPage from "./Pages/Website/HowItWorksPage";
 import SignIn from "./Components/App/Auth/SignIn";
 import ForgotPassword from "./Components/App/Auth/ForgotPassword";
 import SignUp from "./Components/App/Auth/SignUp/SignUp";
+import VerificationSuccess from "./Components/App/Auth/Attendee/VerificationSuccess";
 
 // Import other pages as you create them
 // import About from "./Pages/Website/About"
@@ -27,6 +28,7 @@ function App() {
         <Route path="/sign-in" element={<SignIn/>}/>
         <Route path="/forgot-password" element={<ForgotPassword/>}/>
         <Route path="/sign-up" element={<SignUp/>}/>
+        <Route path="/verification-successful" element={<VerificationSuccess/>}/>
         {/* Website routes with common layout */}
         <Route path="/" element={<WebsiteLayout />}>
           <Route index element={<LandingPage />} />
