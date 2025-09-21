@@ -1,31 +1,80 @@
 import { MoveLeft } from "lucide-react";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { publicRequest } from "../../../requestMethod";
 
-function InitiateReset() {
+function InitiateReset({ onEmailSent }) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     setIsLoading(true);
     setMessage("");
     
-    // Simulate API call
     try {
-      // Replace this with your actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setMessage("Password reset link sent to your email!");
+      const response = await publicRequest.post("/auth/forgot-password", {
+        email: email.trim(),
+      });
+
+      // Success response
+      toast.success("Password reset link sent successfully!");
+      
+      // Call the parent callback to move to next step
+      if (onEmailSent) {
+        onEmailSent(email.trim());
+      }
+      
     } catch (error) {
-      setMessage("Something went wrong. Please try again.");
+      console.error("Forgot password error:", error);
+      
+      // Handle different error scenarios
+      if (error.response?.status === 404) {
+        setMessage("No account found with this email address.");
+        toast.error("No account found with this email address");
+      } else if (error.response?.status === 400) {
+        const errorMessage = error.response?.data?.message || "Invalid email address";
+        setMessage(errorMessage);
+        toast.error(errorMessage);
+      } else if (error.response?.status === 429) {
+        setMessage("Too many requests. Please try again later.");
+        toast.error("Too many requests. Please try again later.");
+      } else if (error.response?.status >= 500) {
+        setMessage("Server error. Please try again later.");
+        toast.error("Server error. Please try again later.");
+      } else if (error.code === "NETWORK_ERROR" || !error.response) {
+        setMessage("Network error. Please check your connection.");
+        toast.error("Network error. Please check your connection.");
+      } else {
+        setMessage("Something went wrong. Please try again.");
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleBack = () => {
-    // Handle navigation back - replace with your routing logic
-    console.log("Navigate back");
+    navigate("/signin"); // Navigate back to sign in page
+  };
+
+  const handleSignInClick = () => {
+    navigate("/signin"); // Navigate to sign in page
   };
 
   return (
@@ -34,7 +83,8 @@ function InitiateReset() {
       <div className="p-4 md:p-6">
         <button 
           onClick={handleBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors touch-manipulation"
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors touch-manipulation disabled:opacity-50"
+          disabled={isLoading}
         >
           <MoveLeft className="w-5 h-5" />
           <span className="font-medium">Back</span>
@@ -71,7 +121,7 @@ function InitiateReset() {
             )}
 
             {/* Form - Mobile optimized */}
-            <div className="space-y-4 md:space-y-6 w-full max-w-sm">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 w-full max-w-sm">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email
@@ -84,11 +134,13 @@ function InitiateReset() {
                   placeholder="janedoe@gmail.com"
                   className="w-full px-4 py-3 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors text-base"
                   style={{ fontSize: '16px' }} // Prevents zoom on iOS
+                  disabled={isLoading}
+                  required
                 />
               </div>
 
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={isLoading || !email}
                 className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation text-base"
               >
@@ -101,15 +153,16 @@ function InitiateReset() {
                   'Proceed'
                 )}
               </button>
-            </div>
+            </form>
 
             {/* Footer - Mobile optimized */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Remember your password?{' '}
                 <button 
-                  onClick={handleBack}
-                  className="text-purple-600 hover:text-purple-700 font-medium touch-manipulation"
+                  onClick={handleSignInClick}
+                  className="text-purple-600 hover:text-purple-700 font-medium touch-manipulation disabled:opacity-50"
+                  disabled={isLoading}
                 >
                   Sign In
                 </button>
