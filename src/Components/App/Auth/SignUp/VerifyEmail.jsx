@@ -39,7 +39,7 @@ function VerifyEmailPage() {
       
       // Redirect to sign-in page after 3 seconds
       setTimeout(() => {
-        window.location.href = '/signin';
+        window.location.href = '/sign-in';
       }, 3000);
 
     } catch (error) {
@@ -80,11 +80,11 @@ function VerifyEmailPage() {
   };
 
   const handleGoToSignIn = () => {
-    window.location.href = '/signin';
+    window.location.href = '/sign-in';
   };
 
   const handleGoToSignUp = () => {
-    window.location.href = '/signup';
+    window.location.href = '/sign-up';
   };
 
   return (

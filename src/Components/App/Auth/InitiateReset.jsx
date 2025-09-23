@@ -70,11 +70,11 @@ function InitiateReset({ onEmailSent }) {
   };
 
   const handleBack = () => {
-    navigate("/signin"); // Navigate back to sign in page
+    navigate("/sign-in"); // Navigate back to sign in page
   };
 
   const handleSignInClick = () => {
-    navigate("/signin"); // Navigate to sign in page
+    navigate("/sign-in"); // Navigate to sign in page
   };
 
   return (

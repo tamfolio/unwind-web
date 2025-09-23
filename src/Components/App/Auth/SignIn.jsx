@@ -7,7 +7,7 @@ import { publicRequest } from "../../../requestMethod";
 import { loginStart,loginFailure, loginSuccess } from "../../../Redux/LoginSlice";
 
 function SignIn() {
-  const [email, setEmail] = useState("janedoe@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   
@@ -87,7 +87,7 @@ function SignIn() {
   };
 
   const handleSignUp = () => {
-    navigate('/signup');
+    navigate('/sign-up');
   };
 
   return (
