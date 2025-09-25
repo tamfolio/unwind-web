@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function VerifyEmail({setCurrentStep}) {
-  const [email, setEmail] = useState("jane***@gmail.com");
+function VerifyEmail({setCurrentStep,email}) {
   const navigate = useNavigate();
 
   const handleChangeEmail = () => {

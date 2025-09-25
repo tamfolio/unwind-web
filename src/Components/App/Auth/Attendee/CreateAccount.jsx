@@ -3,10 +3,9 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { publicRequest } from "../../../../requestMethod";
 import { toast } from "react-toastify";
 
-function CreateAccount({setCurrentStep, onBack}) {
+function CreateAccount({setCurrentStep, onBack, email, setEmail}) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

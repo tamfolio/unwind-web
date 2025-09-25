@@ -7,6 +7,7 @@ import Preference from "../Attendee/Preference";
 function SignUp() {
   const [currentStep, setCurrentStep] = useState("start");
   const [userType, setUserType] = useState(null);
+  const [email, setEmail] = useState("")
 
   const handleContinueFromStart = (selectedPath) => {
     setUserType(selectedPath);
@@ -33,10 +34,12 @@ function SignUp() {
           onBack={handleBackToStart}
           userType={userType}
           setCurrentStep={setCurrentStep}
+          email={email}
+          setEmail={setEmail}
         />
       )}
       {currentStep === "verifyEmail" && (
-        <VerifyEmail onBack={handleBackToStart} userType={userType} setCurrentStep={setCurrentStep} />
+        <VerifyEmail onBack={handleBackToStart} userType={userType} setCurrentStep={setCurrentStep} email={email}/>
       )}
       {currentStep === "preferences" && (
         <Preference onBack={handleBackToStart} userType={userType} />
