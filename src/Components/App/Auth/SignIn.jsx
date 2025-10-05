@@ -50,7 +50,7 @@ function SignIn() {
       toast.success("Sign in successful!");
       
       // Navigate to Home page
-      navigate("/home");
+      navigate("/dashboard");
       
     } catch (error) {
       console.error("Sign in error:", error);

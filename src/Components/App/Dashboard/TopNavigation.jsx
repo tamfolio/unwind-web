@@ -1,7 +1,9 @@
 import React from "react";
 import { Bell, Search } from "lucide-react";
+import { useSelector } from "react-redux";
 
 function TopNavigation({ userType }) {
+    const userData = useSelector((state) => state.user?.currentUser?.user);
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-20">
       <div className="px-4 lg:px-6 py-4">
@@ -36,7 +38,7 @@ function TopNavigation({ userType }) {
                 className="w-10 h-10 rounded-full"
               />
               <div className="hidden md:block">
-                <p className="text-sm font-semibold text-gray-900">Jane</p>
+                <p className="text-sm font-semibold text-gray-900">{userData?.name}</p>
                 <p className="text-xs text-gray-500">
                   {userType === "attendee" ? "Attendee" : "Organizer"}
                 </p>
