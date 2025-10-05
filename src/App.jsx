@@ -14,17 +14,20 @@ import ForgotPassword from "./Components/App/Auth/ForgotPassword";
 import SignUp from "./Components/App/Auth/SignUp/SignUp";
 import VerificationSuccess from "./Components/App/Auth/Attendee/VerificationSuccess";
 import VerifyEmailPage from "./Components/App/Auth/SignUp/VerifyEmail";
-import Home from "./Components/App/Dashboard/Home";
 import ResetPassword from "./Components/App/Auth/ResetPassword";
+import DashboardLayout from "./Components/App/Dashboard/DashboardLayout";
+import AttendeeDashboard from "./Components/App/Dashboard/Attendee/Components/AttendeeDashboard";
+import OrganizerDashboard from "./Components/App/Dashboard/Organizer/Components/OrganizerDashboard";
+import DashboardEventDetails from "./Components/App/Dashboard/Attendee/Components/DashboardEventDetails";
+import { useSelector } from "react-redux";
 
-// Import other pages as you create them
-// import About from "./Pages/Website/About"
-// import Contact from "./Pages/Website/Contact"
-// import PrivacyPolicy from "./Pages/Website/PrivacyPolicy"
-// import TermsOfUse from "./Pages/Website/TermsOfUse"
-// import Dashboard from "./Pages/Dashboard/Dashboard"
+
 
 function App() {
+  const userData = useSelector((state) => state.user?.currentUser?.user);
+  console.log(userData)
+  const userType = userData?.userType; 
+
   return (
     <div>
       <Routes>
@@ -34,7 +37,27 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmailPage/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>
         <Route path="/verification-successful" element={<VerificationSuccess/>}/>
-        <Route path="/home" element={<Home/>}/>
+        
+        {/* Dashboard routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <DashboardLayout userType={userType}>
+              {userType === "attendee" ? <AttendeeDashboard /> : <OrganizerDashboard />}
+            </DashboardLayout>
+          }
+        />
+        
+        {/* Dashboard Event Details Route */}
+        <Route 
+          path="/dashboard/event/:id" 
+          element={
+            <DashboardLayout userType={userType}>
+              <DashboardEventDetails />
+            </DashboardLayout>
+          }
+        />
+
         {/* Website routes with common layout */}
         <Route path="/" element={<WebsiteLayout />}>
           <Route index element={<LandingPage />} />
@@ -46,16 +69,7 @@ function App() {
           <Route path="Contact-us" element={<ContactUs />} />
           <Route path="pricing" element={<Pricing />} />
           <Route path="how-it-works" element={<HowItWorksPage />} />
-          {/* <Route path="contact" element={<Contact />} /> */}
-          {/* <Route path="privacy-policy" element={<PrivacyPolicy />} /> */}
-          {/* <Route path="terms-of-use" element={<TermsOfUse />} /> */}
         </Route>
-
-        {/* Dashboard routes (without website layout) */}
-        {/* <Route path="/dashboard/*" element={<Dashboard />} /> */}
-
-        {/* Catch-all route for 404 - optional */}
-        {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
     </div>
   );

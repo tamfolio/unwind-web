@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const DiscoverEvents = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if we're in the dashboard
+  const isDashboard = location.pathname.includes('/dashboard');
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -91,10 +95,12 @@ const DiscoverEvents = () => {
       : events.filter((event) => event.category === activeCategory);
 
   const handleEventClick = (eventId) => {
-    // Navigate to event details - you can replace this with your routing logic
-    navigate(`/discover-events/${eventId}`)
-    console.log(`Navigate to event ${eventId}`);
-    // In a real app: navigate(`/discover-events/${eventId}`);
+    // Navigate based on current location
+    if (isDashboard) {
+      navigate(`/dashboard/event/${eventId}`);
+    } else {
+      navigate(`/discover-events/${eventId}`);
+    }
   };
 
   return (
@@ -144,32 +150,16 @@ const DiscoverEvents = () => {
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
-                {/* Event Category Badge - Shows category like "Tech", "Music", "Business" */}
+                {/* Event Category Badge */}
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur rounded-lg px-3 py-1">
                   <span className="text-sm font-medium text-gray-700">
                     {event.category}
                   </span>
                 </div>
                 {/* Bookmark Icon */}
-                {/* <div className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-lg p-2 hover:bg-white transition-colors">
-                  <svg
-                    className="w-5 h-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                    />
-                  </svg>
-                </div> */}
                 <div className="w-[32px] h-[32px] bg-[rgba(255,255,255,0.4)] absolute top-4 right-4 rounded-[8px] flex items-center justify-center">
                   <img src="/assets/book-saved.png" alt="" />
                 </div>
-                
               </div>
 
               {/* Event Content */}
@@ -220,7 +210,7 @@ const DiscoverEvents = () => {
                   <button
                     className="bg-purple-600 text-white hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors duration-200"
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevent card click when button is clicked
+                      e.stopPropagation();
                       handleEventClick(event.id);
                     }}
                   >
@@ -247,14 +237,16 @@ const DiscoverEvents = () => {
           </div>
         )}
 
-        {/* View All Events Button */}
-        <div className="text-center">
-          <Link to="/discover-events">
-            <button className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200">
-              View All Events
-            </button>
-          </Link>
-        </div>
+        {/* View All Events Button - Only show on website, not dashboard */}
+        {!isDashboard && (
+          <div className="text-center">
+            <Link to="/discover-events">
+              <button className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200">
+                View All Events
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

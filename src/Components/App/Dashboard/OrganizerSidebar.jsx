@@ -1,0 +1,57 @@
+import React from "react";
+import { Home, Plus, Calendar, CheckSquare, Wallet } from "lucide-react";
+
+function OrganizerSidebar({ activeItem, setActiveItem }) {
+  const menuItems = [
+    { id: "dashboard", label: "Dashboard", icon: Home },
+    { id: "create", label: "Create Events", icon: Plus },
+    { id: "events", label: "My Events", icon: Calendar },
+    { id: "checkin", label: "Check-in", icon: CheckSquare },
+    { id: "wallet", label: "Wallet", icon: Wallet },
+  ];
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="p-6 border-b border-gray-200">
+        <img src="/assets/logo.png" alt="Unwind" className="h-8" />
+      </div>
+
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveItem(item.id)}
+              className={`
+                w-full flex items-center gap-3 px-4 py-3 rounded-xl
+                transition-colors text-left
+                ${
+                  activeItem === item.id
+                    ? "bg-purple-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                }
+              `}
+            >
+              <Icon size={20} />
+              <span className="font-medium">{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Featured Event Card */}
+      <div className="m-4 p-4 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl text-white">
+        <h3 className="font-bold mb-1">Tech Conference 2025</h3>
+        <p className="text-sm text-purple-100 mb-3">May 29, 2025</p>
+        <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
+          <p className="text-xs text-purple-100">Tickets Sold</p>
+          <p className="text-xl font-bold">136 tickets sold</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default OrganizerSidebar;
