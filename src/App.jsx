@@ -20,40 +20,64 @@ import AttendeeDashboard from "./Components/App/Dashboard/Attendee/Components/At
 import OrganizerDashboard from "./Components/App/Dashboard/Organizer/Components/OrganizerDashboard";
 import DashboardEventDetails from "./Components/App/Dashboard/Attendee/Components/DashboardEventDetails";
 import { useSelector } from "react-redux";
-
-
+import SavedEvents from "./Components/App/Dashboard/Attendee/Components/SavedEvents";
+import MyTickets from "./Components/App/Dashboard/Attendee/Components/MyTickets";
 
 function App() {
   const userData = useSelector((state) => state.user?.currentUser?.user);
-  console.log(userData)
-  const userType = userData?.userType; 
+  console.log(userData);
+  const userType = userData?.userType;
 
   return (
     <div>
       <Routes>
-        <Route path="/sign-in" element={<SignIn/>}/>
-        <Route path="/forgot-password" element={<ForgotPassword/>}/>
-        <Route path="/sign-up" element={<SignUp/>}/>
-        <Route path="/verify-email" element={<VerifyEmailPage/>}/>
-        <Route path="/reset-password" element={<ResetPassword/>}/>
-        <Route path="/verification-successful" element={<VerificationSuccess/>}/>
-        
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/verification-successful"
+          element={<VerificationSuccess />}
+        />
+
         {/* Dashboard routes */}
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <DashboardLayout userType={userType}>
-              {userType === "attendee" ? <AttendeeDashboard /> : <OrganizerDashboard />}
+              {userType === "attendee" ? (
+                <AttendeeDashboard />
+              ) : (
+                <OrganizerDashboard />
+              )}
             </DashboardLayout>
           }
         />
-        
+
         {/* Dashboard Event Details Route */}
-        <Route 
-          path="/dashboard/event/:id" 
+        <Route
+          path="/dashboard/event/:id"
           element={
             <DashboardLayout userType={userType}>
               <DashboardEventDetails />
+            </DashboardLayout>
+          }
+        />
+
+        <Route
+          path="/dashboard/saved-events"
+          element={
+            <DashboardLayout userType={userType}>
+              <SavedEvents />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/my-tickets"
+          element={
+            <DashboardLayout userType={userType}>
+              <MyTickets />
             </DashboardLayout>
           }
         />

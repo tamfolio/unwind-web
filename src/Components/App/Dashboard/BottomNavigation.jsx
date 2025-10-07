@@ -13,8 +13,8 @@ import {
 function BottomNavigation({ userType, activeItem, setActiveItem }) {
   const attendeeItems = [
     { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "saved", label: "Saved Events", icon: Bookmark },
-    { id: "tickets", label: "My Tickets", icon: Ticket },
+    { id: "saved-events", label: "Saved Events", icon: Bookmark },
+    { id: "my-tickets", label: "My Tickets", icon: Ticket },
     { id: "wallet", label: "My Wallet", icon: Wallet },
     { id: "support", label: "Support", icon: HelpCircle },
   ];

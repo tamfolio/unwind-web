@@ -1,14 +1,25 @@
 import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Bookmark, Ticket, Wallet, HelpCircle } from "lucide-react";
 
-function AttendeeSidebar({ activeItem, setActiveItem }) {
+function AttendeeSidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "saved", label: "Saved Events", icon: Bookmark },
-    { id: "tickets", label: "My Tickets", icon: Ticket },
-    { id: "wallet", label: "My Wallet", icon: Wallet },
-    { id: "support", label: "Help & Support", icon: HelpCircle },
+    { id: "dashboard", label: "Dashboard", icon: Home, path: "/dashboard" },
+    { id: "saved-events", label: "Saved Events", icon: Bookmark, path: "/dashboard/saved-events" },
+    { id: "my-tickets", label: "My Tickets", icon: Ticket, path: "/dashboard/my-tickets" },
+    { id: "wallet", label: "My Wallet", icon: Wallet, path: "/dashboard/wallet" },
+    { id: "support", label: "Help & Support", icon: HelpCircle, path: "/dashboard/support" },
   ];
+
+  const isActive = (path) => {
+    if (path === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -23,12 +34,12 @@ function AttendeeSidebar({ activeItem, setActiveItem }) {
           return (
             <button
               key={item.id}
-              onClick={() => setActiveItem(item.id)}
+              onClick={() => navigate(item.path)}
               className={`
                 w-full flex items-center gap-3 px-4 py-3 rounded-xl
                 transition-colors text-left
                 ${
-                  activeItem === item.id
+                  isActive(item.path)
                     ? "bg-purple-600 text-white"
                     : "text-gray-600 hover:bg-gray-100"
                 }
