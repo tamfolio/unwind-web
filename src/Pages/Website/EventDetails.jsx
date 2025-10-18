@@ -7,6 +7,7 @@ import {
   Users,
 } from "lucide-react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import PurchaseTicket from "../../Components/App/Dashboard/Attendee/Components/Modals/PurchaseTicket";
 
 function EventDetails() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ function EventDetails() {
   const location = useLocation();
   const [selectedTicket, setSelectedTicket] = useState("regular");
   const [quantity, setQuantity] = useState(1);
+  const [showTicketModal, setShowTicketModal] = useState(false);
 
   // Check if we're in the dashboard
   const isDashboard = location.pathname.includes('/dashboard');
@@ -25,6 +27,7 @@ function EventDetails() {
   // Sample events data (in a real app, this would come from an API)
   const eventsData = {
     1: {
+      id: 1,
       title: "Tech Conference 2025",
       date: "May 25, 2025",
       time: "9:00 AM - 5:00 PM UTC",
@@ -36,6 +39,7 @@ function EventDetails() {
       attendees: 238,
     },
     2: {
+      id: 2,
       title: "Summer Music Festival",
       date: "Jun 15, 2025",
       time: "4:00 PM - 11:00 PM WAT",
@@ -47,6 +51,7 @@ function EventDetails() {
       attendees: 512,
     },
     3: {
+      id: 3,
       title: "Business Leadership Summit",
       date: "Jul 8, 2025",
       time: "10:00 AM - 6:00 PM WAT",
@@ -142,6 +147,19 @@ function EventDetails() {
     }
   };
 
+  const handleGetTicketsClick = () => {
+    if (isDashboard) {
+      setShowTicketModal(true);
+    } else {
+      // For website view, navigate to checkout directly
+      navigate('/checkout');
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowTicketModal(false);
+  };
+
   return (
     <div className={`min-h-screen bg-gray-50 ${isDashboard ? '' : 'px-[74px]'}`}>
       {/* Back Button */}
@@ -229,14 +247,15 @@ function EventDetails() {
 
               {/* Right - Get Tickets Button */}
               <div className="flex-shrink-0">
-                <Link to='/checkout'>
-                  <button className="bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2">
-                    Get Tickets
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                </Link>
+                <button 
+                  onClick={handleGetTicketsClick}
+                  className="bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2"
+                >
+                  Get Tickets
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -527,6 +546,13 @@ function EventDetails() {
           </div>
         )}
       </div>
+
+      {/* Purchase Ticket Modal */}
+      <PurchaseTicket 
+        isOpen={showTicketModal} 
+        onClose={handleModalClose} 
+        eventData={currentEvent} 
+      />
     </div>
   );
 }
