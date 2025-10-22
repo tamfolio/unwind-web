@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import SavedEvents from "./Components/App/Dashboard/Attendee/Components/SavedEvents";
 import MyTickets from "./Components/App/Dashboard/Attendee/Components/MyTickets";
 import Support from "./Components/App/Dashboard/Attendee/Components/Support";
+import Notifications from "./Components/App/Dashboard/Attendee/Components/Notifications";
 
 function App() {
   const userData = useSelector((state) => state.user?.currentUser?.user);
@@ -88,6 +89,15 @@ function App() {
           element={
             <DashboardLayout userType={userType}>
               <Support />
+            </DashboardLayout>
+          }
+        />
+
+        <Route
+          path="/dashboard/notifications"
+          element={
+            <DashboardLayout userType={userType}>
+              <Notifications />
             </DashboardLayout>
           }
         />
