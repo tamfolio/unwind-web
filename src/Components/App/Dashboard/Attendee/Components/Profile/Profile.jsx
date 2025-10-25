@@ -22,17 +22,13 @@ const Profile = () => {
   const ActiveComponent = tabs.find((tab) => tab.id === activeTab)?.component;
 
   const handleLogout = () => {
-    // Handle logout logic here
     console.log('User logged out');
     setShowLogoutModal(false);
-    // Redirect to login page or clear auth state
   };
 
   const handleDeleteAccount = () => {
-    // Handle account deletion logic here
     console.log('Account deleted');
     setShowDeleteModal(false);
-    // Redirect to signup page or landing page
   };
 
   return (
@@ -54,8 +50,8 @@ const Profile = () => {
           </p>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative mb-6">
+        {/* Search Bar - Mobile Only */}
+        <div className="relative mb-6 md:hidden">
           <Search 
             className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" 
             style={{ color: "var(--color-secondary)" }}
@@ -79,9 +75,9 @@ const Profile = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Sidebar - Profile Summary */}
+          {/* Left Sidebar - Hidden on Mobile */}
           <div
-            className="lg:w-1/3 rounded-lg p-6"
+            className="hidden lg:block lg:w-1/3 rounded-lg p-6"
             style={{ backgroundColor: "var(--color-white)" }}
           >
             {/* Profile Image */}
@@ -137,7 +133,7 @@ const Profile = () => {
               ))}
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - Desktop Only */}
             <div className="mt-8 space-y-3">
               <button
                 onClick={() => setShowLogoutModal(true)}
@@ -163,7 +159,7 @@ const Profile = () => {
           </div>
 
           {/* Right Content Area */}
-          <div className="lg:w-2/3">
+          <div className="w-full lg:w-2/3">
             {/* Tab Navigation */}
             <div className="flex space-x-1 mb-6 bg-white rounded-lg p-1">
               {tabs.map((tab) => (
@@ -189,6 +185,30 @@ const Profile = () => {
 
             {/* Active Component */}
             <div>{ActiveComponent && <ActiveComponent />}</div>
+
+            {/* Mobile Action Buttons - Below Content */}
+            <div className="mt-8 space-y-3 lg:hidden">
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                className="w-full py-2 px-4 rounded-lg border transition-colors flex items-center justify-center gap-2"
+                style={{
+                  borderColor: "var(--color-grey)",
+                  color: "var(--color-grey)",
+                }}
+              >
+                👋 Log Out
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="w-full py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: "#ef4444",
+                  color: "var(--color-white)",
+                }}
+              >
+                🗑️ Delete Account
+              </button>
+            </div>
           </div>
         </div>
       </div>
