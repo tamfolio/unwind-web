@@ -24,6 +24,7 @@ import SavedEvents from "./Components/App/Dashboard/Attendee/Components/SavedEve
 import MyTickets from "./Components/App/Dashboard/Attendee/Components/MyTickets";
 import Support from "./Components/App/Dashboard/Attendee/Components/Support";
 import Notifications from "./Components/App/Dashboard/Attendee/Components/Notifications";
+import Profile from "./Components/App/Dashboard/Attendee/Components/Profile/Profile";
 
 function App() {
   const userData = useSelector((state) => state.user?.currentUser?.user);
@@ -98,6 +99,15 @@ function App() {
           element={
             <DashboardLayout userType={userType}>
               <Notifications />
+            </DashboardLayout>
+          }
+        />
+
+        <Route
+          path="/dashboard/profile"
+          element={
+            <DashboardLayout userType={userType}>
+              <Profile />
             </DashboardLayout>
           }
         />
