@@ -7,6 +7,7 @@ import {
   Users,
 } from "lucide-react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { useEvent } from "../../hooks/useEvents"; // Import useEvent from existing file
 import PurchaseTicket from "../../Components/App/Dashboard/Attendee/Components/Modals/PurchaseTicket";
 
 function EventDetails() {
@@ -24,119 +25,209 @@ function EventDetails() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Sample events data (in a real app, this would come from an API)
-  const eventsData = {
-    1: {
-      id: 1,
-      title: "Tech Conference 2025",
-      date: "May 25, 2025",
-      time: "9:00 AM - 5:00 PM UTC",
-      location: "5, Alen Avenue, Lagos",
-      category: "Tech",
-      image: "/assets/event1.png",
-      description: "Join Us for an Unforgettable Experience at Tech Conference 2025",
-      fullDescription: `Get ready to be inspired, informed, and connected at Tech Conference 2025 – the ultimate gathering for tech enthusiasts, innovators, and industry leaders. Whether you're a rising founder, seasoned marketer, or investor, this event is designed to spark ideas and fuel connections that drive the future of technology.`,
-      attendees: 238,
-    },
-    2: {
-      id: 2,
-      title: "Summer Music Festival",
-      date: "Jun 15, 2025",
-      time: "4:00 PM - 11:00 PM WAT",
-      location: "Olympia, Lagos",
-      category: "Music",
-      image: "/assets/event2.png",
-      description: "Experience the hottest music festival of the summer",
-      fullDescription: `Get ready for an unforgettable musical journey at Summer Music Festival 2025! Join thousands of music lovers for a day filled with incredible performances, amazing food, and unforgettable memories.`,
-      attendees: 512,
-    },
-    3: {
-      id: 3,
-      title: "Business Leadership Summit",
-      date: "Jul 8, 2025",
-      time: "10:00 AM - 6:00 PM WAT",
-      location: "Airport Road, Benin City",
-      category: "Business",
-      image: "/assets/event3.png",
-      description: "Learn from industry leaders and networking opportunities",
-      fullDescription: `Connect with business leaders and entrepreneurs at the Business Leadership Summit 2025. This exclusive event brings together thought leaders, investors, and innovators for a day of insights and networking.`,
-      attendees: 156,
-    },
+  // Debug the event ID
+  console.log('EventDetails - Event ID from params:', id);
+  console.log('EventDetails - About to call useEvent hook with ID:', id);
+
+  // Fetch event data using React Query - this should trigger the API call
+  const { 
+    data: eventData, 
+    isLoading: eventLoading, 
+    error: eventError,
+    refetch: refetchEvent
+  } = useEvent(id);
+
+  // Debug the hook results
+  console.log('EventDetails - useEvent results:');
+  console.log('  - eventData:', eventData);
+  console.log('  - eventLoading:', eventLoading);
+  console.log('  - eventError:', eventError);
+
+  // Format event data for display
+  const formatEventData = (apiEvent) => {
+    if (!apiEvent) return null;
+    
+    console.log('EventDetails - Formatting API event data:', apiEvent);
+    
+    // Handle fake image URLs
+    let imageUrl = apiEvent.imageUrl;
+    if (!imageUrl || imageUrl.includes('cdn.example.com') || imageUrl.includes('example.com')) {
+      const categoryImageMap = {
+        'business': '/assets/event1.png',
+        'music': '/assets/event2.png', 
+        'tech': '/assets/event3.png',
+        'sports': '/assets/event1.png',
+        'exhibitions': '/assets/event2.png',
+        'religious': '/assets/event3.png'
+      };
+      imageUrl = categoryImageMap[apiEvent.category?.slug?.toLowerCase()] || '/assets/event1.png';
+    }
+
+    return {
+      id: apiEvent.id,
+      title: apiEvent.title,
+      category: apiEvent.category?.name || 'Event',
+      date: new Date(apiEvent.startDate).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      time: `${new Date(apiEvent.startDate).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit'
+      })} - ${new Date(apiEvent.endDate).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit'
+      })}`,
+      location: `${apiEvent.venue}, ${apiEvent.city}`,
+      fullLocation: {
+        venue: apiEvent.venue,
+        city: apiEvent.city,
+        state: apiEvent.state,
+        country: apiEvent.country
+      },
+      image: imageUrl,
+      description: `Join us for an unforgettable experience at ${apiEvent.title}`,
+      fullDescription: `Get ready to be inspired, informed, and connected at ${apiEvent.title}. This event brings together passionate individuals from the ${apiEvent.category?.name?.toLowerCase()} community for an amazing experience you won't want to miss.`,
+      priceRange: apiEvent.priceRange,
+      minPrice: apiEvent.priceRange?.min || 0,
+      maxPrice: apiEvent.priceRange?.max || 0,
+      isFeatured: apiEvent.isFeatured,
+      isVirtual: apiEvent.isVirtual,
+      ticketTypesCount: apiEvent.ticketTypesCount || 1,
+      attendees: Math.floor(Math.random() * 500) + 100, // Random number for demo
+    };
   };
 
-  // Get current event data or default
-  const currentEvent = eventsData[id] || eventsData[1];
+  // Loading state
+  if (eventLoading) {
+    return (
+      <div className={`min-h-screen bg-gray-50 ${isDashboard ? '' : 'px-[74px]'}`}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading event details...</p>
+            <p className="text-sm text-gray-500 mt-2">Event ID: {id}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const ticketTypes = [
-    {
-      id: "regular",
-      name: "Regular",
-      price: 5000,
-      description: "Standard admission with access to all general event areas",
-      color: "bg-gray-50 border-gray-200",
-    },
-    {
-      id: "vip",
-      name: "VIP",
-      price: 7000,
-      description: "Premium admission with access to all general event areas",
-      color: "bg-blue-50 border-blue-200",
-    },
-    {
-      id: "premium",
-      name: "Premium",
-      price: 12000,
-      description: "Premium admission with access to all general event areas",
-      color: "bg-purple-50 border-purple-200",
-    },
-  ];
+  // Error state
+  if (eventError) {
+    return (
+      <div className={`min-h-screen bg-gray-50 ${isDashboard ? '' : 'px-[74px]'}`}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="text-red-600 mb-4">
+              <h2 className="text-2xl font-bold mb-2">Event Not Found</h2>
+              <p>Sorry, we couldn't load the event details.</p>
+              <p className="text-sm mt-2">Error: {eventError.message}</p>
+              <p className="text-xs mt-1 text-gray-500">Event ID: {id}</p>
+            </div>
+            <div className="space-x-2">
+              <button 
+                onClick={() => refetchEvent()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Retry
+              </button>
+              <button 
+                onClick={() => navigate(isDashboard ? '/dashboard' : '/discover-events')}
+                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700"
+              >
+                Back to Events
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const relatedEvents = [
-    {
-      id: 2,
-      title: "Summer Music Festival",
-      category: "Music",
-      date: "Jun 15, 2025",
-      location: "15, Chevron, Lekki, Lagos",
-      price: "Free",
-      image: "/assets/event2.png",
-      isPaid: false,
-    },
-    {
-      id: 3,
-      title: "Business Leadership Summit",
-      category: "Business",
-      date: "Jul 8, 2025",
-      location: "1, Airport Road, Benin City",
-      price: "₦ 2,000",
-      image: "/assets/event3.png",
-      isPaid: true,
-    },
-    {
-      id: 4,
-      title: "Gaming Championship",
-      category: "Gaming",
-      date: "Aug 12, 2025",
-      location: "10, Victoria Island, Lagos",
-      price: "₦ 1,500",
-      image: "/assets/event1.png",
-      isPaid: true,
-    },
-  ];
+  const currentEvent = formatEventData(eventData);
+  
+  if (!currentEvent) {
+    return (
+      <div className={`min-h-screen bg-gray-50 ${isDashboard ? '' : 'px-[74px]'}`}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-gray-600">No event data available</p>
+            <p className="text-xs mt-1 text-gray-500">Event ID: {id}</p>
+            <button 
+              onClick={() => navigate(isDashboard ? '/dashboard' : '/discover-events')}
+              className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700"
+            >
+              Back to Events
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Generate ticket types based on API data
+  const generateTicketTypes = (event) => {
+    const basePrice = event.minPrice;
+    const maxPrice = event.maxPrice;
+    
+    if (basePrice === 0) {
+      return [
+        {
+          id: "free",
+          name: "Free",
+          price: 0,
+          description: "Free admission to the event",
+          color: "bg-green-50 border-green-200",
+        }
+      ];
+    }
+
+    const ticketTypes = [
+      {
+        id: "regular",
+        name: "Regular",
+        price: basePrice,
+        description: "Standard admission with access to all general event areas",
+        color: "bg-gray-50 border-gray-200",
+      }
+    ];
+
+    if (maxPrice > basePrice) {
+      const midPrice = Math.floor((basePrice + maxPrice) / 2);
+      
+      if (event.ticketTypesCount >= 2) {
+        ticketTypes.push({
+          id: "vip",
+          name: "VIP",
+          price: midPrice,
+          description: "Premium admission with additional perks",
+          color: "bg-blue-50 border-blue-200",
+        });
+      }
+
+      if (event.ticketTypesCount >= 3) {
+        ticketTypes.push({
+          id: "premium",
+          name: "Premium",
+          price: maxPrice,
+          description: "Premium admission with access to all areas and exclusive benefits",
+          color: "bg-purple-50 border-purple-200",
+        });
+      }
+    }
+
+    return ticketTypes;
+  };
+
+  const ticketTypes = generateTicketTypes(currentEvent);
 
   const calculateTotal = () => {
     const selectedTicketType = ticketTypes.find(
       (ticket) => ticket.id === selectedTicket
     );
     return selectedTicketType ? selectedTicketType.price * quantity : 0;
-  };
-
-  const handleRelatedEventClick = (eventId) => {
-    if (isDashboard) {
-      navigate(`/dashboard/event/${eventId}`);
-    } else {
-      navigate(`/discover-events/${eventId}`);
-    }
   };
 
   const handleBackClick = () => {
@@ -214,9 +305,16 @@ function EventDetails() {
               </div>
               <div className="text-right">
                 <p className="text-3xl md:text-4xl font-bold text-gray-900">
-                  ₦ 5,000 - ₦ 12,000
+                  {currentEvent.minPrice === 0 ? 'Free' : 
+                   currentEvent.minPrice === currentEvent.maxPrice ? 
+                   `₦ ${currentEvent.minPrice.toLocaleString()}` :
+                   `₦ ${currentEvent.minPrice.toLocaleString()} - ₦ ${currentEvent.maxPrice.toLocaleString()}`
+                  }
                 </p>
-                <p className="text-sm text-gray-500 mt-1">Ticket price range</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {currentEvent.minPrice === 0 ? 'Free event' : 
+                   currentEvent.minPrice === currentEvent.maxPrice ? 'Ticket price' : 'Ticket price range'}
+                </p>
               </div>
             </div>
 
@@ -251,7 +349,7 @@ function EventDetails() {
                   onClick={handleGetTicketsClick}
                   className="bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center gap-2"
                 >
-                  Get Tickets
+                  {currentEvent.minPrice === 0 ? 'Get Free Ticket' : 'Get Tickets'}
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
@@ -298,51 +396,27 @@ function EventDetails() {
                 {currentEvent.fullDescription}
               </p>
 
-              <h3 className="text-lg font-semibold mb-3">
-                Why You Should Attend:
-              </h3>
+              <h3 className="text-lg font-semibold mb-3">Event Details:</h3>
               <ul className="space-y-2 text-gray-700 mb-6">
-                <li>
-                  • Cutting-Edge Insights: Dive into the latest trends, tools,
-                  and breakthroughs in AI, software, Web3, and more
-                </li>
-                <li>
-                  • Unmatched Networking: Meet like-minded professionals,
-                  potential collaborators, and decision-makers
-                </li>
-                <li>
-                  • Expert-Led Seminars: Attend thought-provoking sessions and
-                  industry experts on entrepreneurship, innovation, and growth
-                </li>
-                <li>• Stay ahead with insights and future-forward thinking</li>
-                <li>
-                  • Hands-on Innovation Showcase: Discover cutting-edge products
-                  and emerging startups
-                </li>
+                <li>• <strong>Venue:</strong> {currentEvent.fullLocation.venue}</li>
+                <li>• <strong>Location:</strong> {currentEvent.fullLocation.city}, {currentEvent.fullLocation.state}, {currentEvent.fullLocation.country}</li>
+                <li>• <strong>Category:</strong> {currentEvent.category}</li>
+                {currentEvent.isFeatured && <li>• <strong>Featured Event:</strong> This is a highlighted event</li>}
+                {currentEvent.isVirtual && <li>• <strong>Virtual Event:</strong> Join online from anywhere</li>}
               </ul>
 
-              <h3 className="text-lg font-semibold mb-3">Who Should Attend:</h3>
-              <p className="text-gray-700 mb-6">
-                Entrepreneurs, developers, designers, product managers,
-                investors, tech journalists, students, and anyone passionate
-                about the intersection of innovation and technology.
-              </p>
-
-              <h3 className="text-lg font-semibold mb-3">
-                Sponsorship & Partnerships:
-              </h3>
-              <p className="text-gray-700 mb-6">
-                Looking to showcase your brand or connect with the tech
-                community? We offer a variety of sponsorship packages with
-                highly targeted audience, exclusive branding opportunities, and
-                direct engagement with key players in the ecosystem.
-              </p>
+              <h3 className="text-lg font-semibold mb-3">Why You Should Attend:</h3>
+              <ul className="space-y-2 text-gray-700 mb-6">
+                <li>• Connect with like-minded individuals in the {currentEvent.category.toLowerCase()} community</li>
+                <li>• Gain valuable insights and knowledge from industry experts</li>
+                <li>• Network with professionals and potential collaborators</li>
+                <li>• Experience an unforgettable event in {currentEvent.fullLocation.city}</li>
+              </ul>
 
               <h3 className="text-lg font-semibold mb-3">Don't Miss Out!</h3>
               <p className="text-gray-700">
-                This is more than just a conference – it's where ideas, industry
-                connections begin. Secure your spot today and be part of
-                something extraordinary.
+                This is more than just an event – it's where connections begin and memories are made. 
+                Secure your spot today and be part of something extraordinary.
               </p>
             </div>
 
@@ -379,7 +453,7 @@ function EventDetails() {
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-semibold">{ticket.name}</h3>
                         <span className="font-bold text-lg">
-                          ₦{ticket.price.toLocaleString()}
+                          {ticket.price === 0 ? 'Free' : `₦${ticket.price.toLocaleString()}`}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600">
@@ -420,8 +494,8 @@ function EventDetails() {
 
                 <div className="border-t pt-4 mb-6">
                   <div className="flex justify-between items-center mb-2">
-                    <span>Regular Tickets</span>
-                    <span>₦{calculateTotal().toLocaleString()}</span>
+                    <span>Tickets</span>
+                    <span>{calculateTotal() === 0 ? 'Free' : `₦${calculateTotal().toLocaleString()}`}</span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
                     <span>Service Fee</span>
@@ -429,12 +503,12 @@ function EventDetails() {
                   </div>
                   <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
                     <span>Total</span>
-                    <span>₦{calculateTotal().toLocaleString()}</span>
+                    <span>{calculateTotal() === 0 ? 'Free' : `₦${calculateTotal().toLocaleString()}`}</span>
                   </div>
                 </div>
                 <Link to='/checkout'>
                   <button className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors mb-4">
-                    Get Tickets
+                    {calculateTotal() === 0 ? 'Get Free Tickets' : 'Get Tickets'}
                   </button>
                 </Link>
 
@@ -446,105 +520,6 @@ function EventDetails() {
             </div>
           )}
         </div>
-
-        {/* Related Events - Hide in dashboard */}
-        {!isDashboard && (
-          <div className="mt-16">
-            <h2 className="text-3xl font-bold text-center mb-8">
-              Events You May Like
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {relatedEvents.map((event) => (
-                <div
-                  key={event.id}
-                  onClick={() => handleRelatedEventClick(event.id)}
-                  className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                >
-                  <div className="relative h-64">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur rounded-lg px-3 py-1">
-                      <span className="text-sm font-medium text-gray-700">
-                        {event.category}
-                      </span>
-                    </div>
-                    <div className="w-[32px] h-[32px] bg-[rgba(255,255,255,0.4)] absolute top-4 right-4 rounded-[8px] flex items-center justify-center">
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">
-                      {event.title}
-                    </h3>
-
-                    <div className="flex items-center space-x-2 mb-3">
-                      <svg
-                        className="w-5 h-5 text-purple-600"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="text-gray-600">{event.date}</span>
-                    </div>
-
-                    <div className="flex items-center space-x-2 mb-6">
-                      <svg
-                        className="w-5 h-5 text-purple-600"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="text-gray-600 text-sm">
-                        {event.location}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold text-purple-600">
-                        {event.price}
-                      </div>
-                      <Link to={`/discover-events/${event.id}`}>
-                        <button
-                          className="bg-purple-600 text-white hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors duration-200"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                        >
-                          {event.isPaid ? "Buy Tickets" : "Get Ticket"}
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-center">
-              <button
-                onClick={() => navigate("/discover-events")}
-                className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                View All Events
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Purchase Ticket Modal */}
