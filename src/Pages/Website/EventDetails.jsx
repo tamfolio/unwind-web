@@ -5,16 +5,21 @@ import {
   Clock,
   MapPin,
   Users,
+  Star,
+  Globe,
+  Mail,
+  Info,
+  Navigation,
 } from "lucide-react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
-import { useEvent } from "../../hooks/useEvents"; // Import useEvent from existing file
+import { useEvent } from "../../hooks/useEvents";
 import PurchaseTicket from "../../Components/App/Dashboard/Attendee/Components/Modals/PurchaseTicket";
 
 function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedTicket, setSelectedTicket] = useState("regular");
+  const [selectedTicket, setSelectedTicket] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [showTicketModal, setShowTicketModal] = useState(false);
 
@@ -25,11 +30,7 @@ function EventDetails() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Debug the event ID
-  console.log('EventDetails - Event ID from params:', id);
-  console.log('EventDetails - About to call useEvent hook with ID:', id);
-
-  // Fetch event data using React Query - this should trigger the API call
+  // Fetch event data using React Query
   const { 
     data: eventData, 
     isLoading: eventLoading, 
@@ -37,20 +38,16 @@ function EventDetails() {
     refetch: refetchEvent
   } = useEvent(id);
 
-  // Debug the hook results
-  console.log('EventDetails - useEvent results:');
-  console.log('  - eventData:', eventData);
-  console.log('  - eventLoading:', eventLoading);
-  console.log('  - eventError:', eventError);
-
   // Format event data for display
   const formatEventData = (apiEvent) => {
     if (!apiEvent) return null;
     
-    console.log('EventDetails - Formatting API event data:', apiEvent);
+    console.log('EventDetails - Formatting enhanced API event data:', apiEvent);
     
-    // Handle fake image URLs
+    // Handle fake image URLs with better fallbacks
     let imageUrl = apiEvent.imageUrl;
+    let bannerUrl = apiEvent.bannerUrl;
+    
     if (!imageUrl || imageUrl.includes('cdn.example.com') || imageUrl.includes('example.com')) {
       const categoryImageMap = {
         'business': '/assets/event1.png',
@@ -62,42 +59,86 @@ function EventDetails() {
       };
       imageUrl = categoryImageMap[apiEvent.category?.slug?.toLowerCase()] || '/assets/event1.png';
     }
+    
+    if (!bannerUrl || bannerUrl.includes('cdn.example.com')) {
+      bannerUrl = imageUrl; // Use main image as banner fallback
+    }
 
+    // Format dates and times
+    const startDate = new Date(apiEvent.startDate);
+    const endDate = new Date(apiEvent.endDate);
+    
     return {
       id: apiEvent.id,
       title: apiEvent.title,
+      slug: apiEvent.slug,
+      description: apiEvent.description || `Join us for an unforgettable experience at ${apiEvent.title}`,
       category: apiEvent.category?.name || 'Event',
-      date: new Date(apiEvent.startDate).toLocaleDateString('en-US', {
+      categorySlug: apiEvent.category?.slug,
+      
+      // Enhanced date/time formatting
+      date: startDate.toLocaleDateString('en-US', {
+        weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       }),
-      time: `${new Date(apiEvent.startDate).toLocaleTimeString('en-US', {
+      shortDate: startDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      time: `${startDate.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit'
-      })} - ${new Date(apiEvent.endDate).toLocaleTimeString('en-US', {
+      })} - ${endDate.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit'
       })}`,
-      location: `${apiEvent.venue}, ${apiEvent.city}`,
-      fullLocation: {
-        venue: apiEvent.venue,
-        city: apiEvent.city,
-        state: apiEvent.state,
-        country: apiEvent.country
-      },
+      timezone: apiEvent.timezone,
+      
+      // Enhanced location data
+      venue: apiEvent.venue,
+      address: apiEvent.address,
+      city: apiEvent.city,
+      state: apiEvent.state,
+      country: apiEvent.country,
+      fullAddress: `${apiEvent.venue}, ${apiEvent.address}, ${apiEvent.city}, ${apiEvent.state}, ${apiEvent.country}`,
+      directions: apiEvent.directions,
+      additionalInfo: apiEvent.additionalInfo,
+      
+      // Images
       image: imageUrl,
-      description: `Join us for an unforgettable experience at ${apiEvent.title}`,
-      fullDescription: `Get ready to be inspired, informed, and connected at ${apiEvent.title}. This event brings together passionate individuals from the ${apiEvent.category?.name?.toLowerCase()} community for an amazing experience you won't want to miss.`,
+      bannerUrl: bannerUrl,
+      
+      // Event flags
+      isFeatured: apiEvent.isFeatured,
+      isVirtual: apiEvent.isVirtual,
+      
+      // Organizer info
+      organizer: apiEvent.organizer,
+      
+      // Pricing
       priceRange: apiEvent.priceRange,
       minPrice: apiEvent.priceRange?.min || 0,
       maxPrice: apiEvent.priceRange?.max || 0,
-      isFeatured: apiEvent.isFeatured,
-      isVirtual: apiEvent.isVirtual,
-      ticketTypesCount: apiEvent.ticketTypesCount || 1,
-      attendees: Math.floor(Math.random() * 500) + 100, // Random number for demo
+      
+      // Ticket types from API
+      ticketTypes: apiEvent.ticketTypes || [],
+      
+      // Calculate total attendees and availability
+      totalCapacity: apiEvent.ticketTypes?.reduce((total, ticket) => total + ticket.quantity, 0) || 0,
+      totalSold: apiEvent.ticketTypes?.reduce((total, ticket) => total + ticket.sold, 0) || 0,
+      totalAvailable: apiEvent.ticketTypes?.reduce((total, ticket) => total + ticket.available, 0) || 0,
     };
   };
+
+  // Set default ticket when data loads
+  useEffect(() => {
+    if (eventData?.ticketTypes && eventData.ticketTypes.length > 0 && !selectedTicket) {
+      setSelectedTicket(eventData.ticketTypes[0].id);
+    }
+  }, [eventData, selectedTicket]);
 
   // Loading state
   if (eventLoading) {
@@ -167,67 +208,18 @@ function EventDetails() {
     );
   }
 
-  // Generate ticket types based on API data
-  const generateTicketTypes = (event) => {
-    const basePrice = event.minPrice;
-    const maxPrice = event.maxPrice;
-    
-    if (basePrice === 0) {
-      return [
-        {
-          id: "free",
-          name: "Free",
-          price: 0,
-          description: "Free admission to the event",
-          color: "bg-green-50 border-green-200",
-        }
-      ];
-    }
-
-    const ticketTypes = [
-      {
-        id: "regular",
-        name: "Regular",
-        price: basePrice,
-        description: "Standard admission with access to all general event areas",
-        color: "bg-gray-50 border-gray-200",
-      }
-    ];
-
-    if (maxPrice > basePrice) {
-      const midPrice = Math.floor((basePrice + maxPrice) / 2);
-      
-      if (event.ticketTypesCount >= 2) {
-        ticketTypes.push({
-          id: "vip",
-          name: "VIP",
-          price: midPrice,
-          description: "Premium admission with additional perks",
-          color: "bg-blue-50 border-blue-200",
-        });
-      }
-
-      if (event.ticketTypesCount >= 3) {
-        ticketTypes.push({
-          id: "premium",
-          name: "Premium",
-          price: maxPrice,
-          description: "Premium admission with access to all areas and exclusive benefits",
-          color: "bg-purple-50 border-purple-200",
-        });
-      }
-    }
-
-    return ticketTypes;
-  };
-
-  const ticketTypes = generateTicketTypes(currentEvent);
-
   const calculateTotal = () => {
-    const selectedTicketType = ticketTypes.find(
+    const selectedTicketType = currentEvent.ticketTypes.find(
       (ticket) => ticket.id === selectedTicket
     );
     return selectedTicketType ? selectedTicketType.price * quantity : 0;
+  };
+
+  const getAvailabilityStatus = (ticket) => {
+    const availablePercentage = (ticket.available / ticket.quantity) * 100;
+    if (availablePercentage <= 10) return { status: 'limited', color: 'text-red-600', text: 'Only few left!' };
+    if (availablePercentage <= 30) return { status: 'selling-fast', color: 'text-orange-600', text: 'Selling fast' };
+    return { status: 'available', color: 'text-green-600', text: 'Available' };
   };
 
   const handleBackClick = () => {
@@ -242,7 +234,6 @@ function EventDetails() {
     if (isDashboard) {
       setShowTicketModal(true);
     } else {
-      // For website view, navigate to checkout directly
       navigate('/checkout');
     }
   };
@@ -267,9 +258,12 @@ function EventDetails() {
       {/* Hero Section */}
       <div className={`relative ${isDashboard ? 'h-[300px] md:h-[400px]' : 'h-[448px]'} overflow-hidden rounded-2xl`}>
         <img
-          src={currentEvent.image}
+          src={currentEvent.bannerUrl}
           alt={currentEvent.title}
           className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = currentEvent.image;
+          }}
         />
 
         {/* Website Hero Title Overlay */}
@@ -282,9 +276,23 @@ function EventDetails() {
             </div>
 
             <div className="absolute bottom-6 left-6 text-white">
-              <span className="inline-block bg-white bg-opacity-20 text-white text-sm px-3 py-1 rounded-full mb-4">
-                {currentEvent.category}
-              </span>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="inline-block bg-white bg-opacity-20 text-white text-sm px-3 py-1 rounded-full">
+                  {currentEvent.category}
+                </span>
+                {currentEvent.isFeatured && (
+                  <span className="inline-flex items-center bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                    <Star className="w-3 h-3 mr-1" />
+                    Featured
+                  </span>
+                )}
+                {currentEvent.isVirtual && (
+                  <span className="inline-flex items-center bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                    <Globe className="w-3 h-3 mr-1" />
+                    Virtual
+                  </span>
+                )}
+              </div>
               <h1 className="text-4xl font-bold mb-2">{currentEvent.title}</h1>
               <p className="text-lg opacity-90">{currentEvent.description}</p>
             </div>
@@ -298,10 +306,22 @@ function EventDetails() {
           <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
             {/* Top Row - Category Badge and Price */}
             <div className="flex justify-between items-start mb-6">
-              <div className="inline-block">
+              <div className="flex items-center gap-2">
                 <span className="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium">
                   {currentEvent.category}
                 </span>
+                {currentEvent.isFeatured && (
+                  <span className="inline-flex items-center bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                    <Star className="w-3 h-3 mr-1" />
+                    Featured
+                  </span>
+                )}
+                {currentEvent.isVirtual && (
+                  <span className="inline-flex items-center bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                    <Globe className="w-3 h-3 mr-1" />
+                    Virtual
+                  </span>
+                )}
               </div>
               <div className="text-right">
                 <p className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -334,11 +354,15 @@ function EventDetails() {
                   </div>
                   <div className="flex items-center text-gray-600">
                     <Clock className="w-5 h-5 mr-3 text-purple-600" />
-                    <span>{currentEvent.time}</span>
+                    <span>{currentEvent.time} ({currentEvent.timezone})</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <MapPin className="w-5 h-5 mr-3 text-purple-600" />
-                    <span>{currentEvent.location}</span>
+                    <span>{currentEvent.venue}, {currentEvent.city}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Users className="w-5 h-5 mr-3 text-purple-600" />
+                    <span>{currentEvent.totalSold} attending • {currentEvent.totalAvailable} tickets left</span>
                   </div>
                 </div>
               </div>
@@ -376,7 +400,11 @@ function EventDetails() {
                   </div>
                   <div className="flex items-center text-gray-600">
                     <MapPin className="w-5 h-5 mr-2" />
-                    <span>{currentEvent.location}</span>
+                    <span>{currentEvent.venue}, {currentEvent.city}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Users className="w-5 h-5 mr-2" />
+                    <span>{currentEvent.totalSold} attending</span>
                   </div>
                 </div>
 
@@ -391,43 +419,86 @@ function EventDetails() {
             {/* About This Event */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h2 className="text-2xl font-bold mb-4">About This Event</h2>
-              <p className="text-gray-700 mb-4 font-semibold">{currentEvent.description}</p>
-              <p className="text-gray-700 mb-6">
-                {currentEvent.fullDescription}
+              <p className="text-gray-700 mb-6 text-lg leading-relaxed">
+                {currentEvent.description}
               </p>
 
               <h3 className="text-lg font-semibold mb-3">Event Details:</h3>
-              <ul className="space-y-2 text-gray-700 mb-6">
-                <li>• <strong>Venue:</strong> {currentEvent.fullLocation.venue}</li>
-                <li>• <strong>Location:</strong> {currentEvent.fullLocation.city}, {currentEvent.fullLocation.state}, {currentEvent.fullLocation.country}</li>
-                <li>• <strong>Category:</strong> {currentEvent.category}</li>
-                {currentEvent.isFeatured && <li>• <strong>Featured Event:</strong> This is a highlighted event</li>}
-                {currentEvent.isVirtual && <li>• <strong>Virtual Event:</strong> Join online from anywhere</li>}
-              </ul>
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Venue</span>
+                    <p className="text-gray-900">{currentEvent.venue}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Address</span>
+                    <p className="text-gray-900">{currentEvent.address}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Location</span>
+                    <p className="text-gray-900">{currentEvent.city}, {currentEvent.state}, {currentEvent.country}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Category</span>
+                    <p className="text-gray-900">{currentEvent.category}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Organizer</span>
+                    <div className="flex items-center gap-2">
+                      <p className="text-gray-900">{currentEvent.organizer?.name}</p>
+                      {currentEvent.organizer?.email && (
+                        <a 
+                          href={`mailto:${currentEvent.organizer.email}`}
+                          className="text-purple-600 hover:text-purple-700"
+                        >
+                          <Mail className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Timezone</span>
+                    <p className="text-gray-900">{currentEvent.timezone}</p>
+                  </div>
+                </div>
+              </div>
 
-              <h3 className="text-lg font-semibold mb-3">Why You Should Attend:</h3>
-              <ul className="space-y-2 text-gray-700 mb-6">
-                <li>• Connect with like-minded individuals in the {currentEvent.category.toLowerCase()} community</li>
-                <li>• Gain valuable insights and knowledge from industry experts</li>
-                <li>• Network with professionals and potential collaborators</li>
-                <li>• Experience an unforgettable event in {currentEvent.fullLocation.city}</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold mb-3">Don't Miss Out!</h3>
-              <p className="text-gray-700">
-                This is more than just an event – it's where connections begin and memories are made. 
-                Secure your spot today and be part of something extraordinary.
-              </p>
+              {currentEvent.additionalInfo && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-2">
+                    <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-medium text-blue-900 mb-1">Additional Information</h4>
+                      <p className="text-blue-800 text-sm">{currentEvent.additionalInfo}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Directions */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-2xl font-bold mb-4">Directions</h2>
+              <h2 className="text-2xl font-bold mb-4">Location & Directions</h2>
+              
+              {currentEvent.directions && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-start gap-2">
+                    <Navigation className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-medium text-yellow-900 mb-1">Directions</h4>
+                      <p className="text-yellow-800 text-sm">{currentEvent.directions}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
                 <div className="text-center text-gray-500">
                   <MapPin className="w-12 h-12 mx-auto mb-2" />
                   <p>Interactive Map</p>
-                  <p className="text-sm">{currentEvent.location}</p>
+                  <p className="text-sm">{currentEvent.fullAddress}</p>
                 </div>
               </div>
             </div>
@@ -440,81 +511,96 @@ function EventDetails() {
                 <h2 className="text-2xl font-bold mb-6">Get Your Tickets</h2>
 
                 <div className="space-y-4 mb-6">
-                  {ticketTypes.map((ticket) => (
-                    <div
-                      key={ticket.id}
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                        selectedTicket === ticket.id
-                          ? "border-purple-500 bg-purple-50"
-                          : ticket.color
-                      }`}
-                      onClick={() => setSelectedTicket(ticket.id)}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold">{ticket.name}</h3>
-                        <span className="font-bold text-lg">
-                          {ticket.price === 0 ? 'Free' : `₦${ticket.price.toLocaleString()}`}
-                        </span>
+                  {currentEvent.ticketTypes.map((ticket) => {
+                    const availability = getAvailabilityStatus(ticket);
+                    return (
+                      <div
+                        key={ticket.id}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                          selectedTicket === ticket.id
+                            ? "border-purple-500 bg-purple-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        } ${ticket.available === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={() => ticket.available > 0 && setSelectedTicket(ticket.id)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-semibold">{ticket.name}</h3>
+                          <span className="font-bold text-lg">
+                            ₦{ticket.price.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">
+                          {ticket.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm font-medium ${availability.color}`}>
+                            {ticket.available === 0 ? 'Sold Out' : availability.text}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">
+                              {ticket.available} of {ticket.quantity} left
+                            </span>
+                            {selectedTicket === ticket.id && ticket.available > 0 && (
+                              <div className="w-4 h-4 bg-purple-600 rounded-full"></div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600">
-                        {ticket.description}
-                      </p>
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm text-gray-500">Available</span>
-                        {selectedTicket === ticket.id && (
-                          <div className="w-4 h-4 bg-purple-600 rounded-full"></div>
-                        )}
+                    );
+                  })}
+                </div>
+
+                {selectedTicket && (
+                  <>
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium mb-2">
+                        Quantity
+                      </label>
+                      <div className="flex items-center border rounded-lg">
+                        <button
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          className="px-3 py-2 hover:bg-gray-100 transition-colors"
+                        >
+                          -
+                        </button>
+                        <span className="flex-1 text-center py-2 border-x">
+                          {quantity}
+                        </span>
+                        <button
+                          onClick={() => setQuantity(quantity + 1)}
+                          className="px-3 py-2 hover:bg-gray-100 transition-colors"
+                        >
+                          +
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
 
-                <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2">
-                    Quantity
-                  </label>
-                  <div className="flex items-center border rounded-lg">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3 py-2 hover:bg-gray-100 transition-colors"
-                    >
-                      -
-                    </button>
-                    <span className="flex-1 text-center py-2 border-x">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="px-3 py-2 hover:bg-gray-100 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
+                    <div className="border-t pt-4 mb-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <span>Tickets ({quantity}x)</span>
+                        <span>₦{calculateTotal().toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span>Service Fee</span>
+                        <span>₦0</span>
+                      </div>
+                      <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
+                        <span>Total</span>
+                        <span>₦{calculateTotal().toLocaleString()}</span>
+                      </div>
+                    </div>
 
-                <div className="border-t pt-4 mb-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <span>Tickets</span>
-                    <span>{calculateTotal() === 0 ? 'Free' : `₦${calculateTotal().toLocaleString()}`}</span>
-                  </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span>Service Fee</span>
-                    <span>₦0</span>
-                  </div>
-                  <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
-                    <span>Total</span>
-                    <span>{calculateTotal() === 0 ? 'Free' : `₦${calculateTotal().toLocaleString()}`}</span>
-                  </div>
-                </div>
-                <Link to='/checkout'>
-                  <button className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors mb-4">
-                    {calculateTotal() === 0 ? 'Get Free Tickets' : 'Get Tickets'}
-                  </button>
-                </Link>
+                    <Link to='/checkout'>
+                      <button className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors mb-4">
+                        Get Tickets
+                      </button>
+                    </Link>
+                  </>
+                )}
 
                 <p className="text-center text-sm text-gray-500">
                   <Users className="w-4 h-4 inline mr-1" />
-                  {currentEvent.attendees} people are interested
+                  {currentEvent.totalSold} people attending
                 </p>
               </div>
             </div>
