@@ -23,7 +23,7 @@ function ConfirmPurchase({ isOpen, onClose, onConfirm, ticketData, eventData }) 
         {/* Modal Content */}
         <div className="p-6">
           <p className="text-gray-700 mb-6">
-            You are about to purchase {ticketData.quantity} {ticketData.ticketType} ticket{ticketData.quantity > 1 ? 's' : ''} for {eventData?.title} for a total of{' '}
+            You are about to purchase {ticketData.quantity} <span className='font-semibold'>{ticketData.title}</span> ticket{ticketData.quantity > 1 ? 's' : ''} for {eventData?.title} for a total of{' '}
             <span className="font-semibold">{formatPrice(ticketData.total)}</span> using your wallet balance.
           </p>
 

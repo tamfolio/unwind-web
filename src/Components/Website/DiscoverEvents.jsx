@@ -1,16 +1,76 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEvents, useCategories } from "../../hooks/useEvents";
+import { useSelector } from 'react-redux';
+import { useEvents, useCategories, useSavedEvents, useAddBookmark, useRemoveBookmark } from "@hooks/useEvents";
+import { useQueryClient } from '@tanstack/react-query';
 
 const DiscoverEvents = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [bookmarkingEvents, setBookmarkingEvents] = useState(new Set()); // Track which events are being bookmarked
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
 
   // Check if we're in the dashboard
   const isDashboard = location.pathname.includes('/dashboard');
+
+  // Get access token for bookmark functionality
+  const { access_token } = useSelector((state) => state.user?.currentUser || {});
+
+  // Bookmark mutations
+  const addBookmarkMutation = useAddBookmark({
+    onSuccess: (data, variables) => {
+      console.log('✅ Bookmark added successfully');
+      queryClient.invalidateQueries(['savedEvents']);
+      setBookmarkingEvents(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(variables.eventId);
+        return newSet;
+      });
+    },
+    onError: (error, variables) => {
+      console.error('❌ Failed to add bookmark:', error);
+      setBookmarkingEvents(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(variables.eventId);
+        return newSet;
+      });
+    }
+  });
+
+  const removeBookmarkMutation = useRemoveBookmark({
+    onSuccess: (data, variables) => {
+      console.log('✅ Bookmark removed successfully');
+      queryClient.invalidateQueries(['savedEvents']);
+      setBookmarkingEvents(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(variables.eventId);
+        return newSet;
+      });
+    },
+    onError: (error, variables) => {
+      console.error('❌ Failed to remove bookmark:', error);
+      setBookmarkingEvents(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(variables.eventId);
+        return newSet;
+      });
+    }
+  });
+
+  // Fetch saved events to determine which events are bookmarked
+  const { data: savedEventsData } = useSavedEvents(
+    { page: 1, limit: 1000 }, // Get all saved events to check bookmark status
+    access_token,
+    { enabled: !!access_token } // Only fetch if user is authenticated
+  );
+
+  // Create a Set of bookmarked event IDs for fast lookup
+  const bookmarkedEventIds = new Set(
+    savedEventsData?.events?.map(bookmark => bookmark.event?.id || bookmark.id) || []
+  );
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -69,14 +129,8 @@ const DiscoverEvents = () => {
   console.log('Active category:', activeCategory);
   console.log('Current page:', currentPage);
   console.log('Filters being sent to API:', filters);
-  console.log('Categories data:', categoriesData);
-  console.log('Categories loading:', categoriesLoading);
-  console.log('Categories error:', categoriesError);
-  console.log('Events data:', eventsData);
-  console.log('Events loading:', eventsLoading);
-  console.log('Events error:', eventsError);
+  console.log('Bookmarked event IDs:', Array.from(bookmarkedEventIds));
   console.log('Events array length:', events.length);
-  console.log('Categories array:', categories);
   console.log('================================');
 
   // Helper function to get category icons
@@ -111,6 +165,12 @@ const DiscoverEvents = () => {
       imageUrl = categoryImageMap[event.category.slug.toLowerCase()] || '/assets/event1.png';
     }
 
+    // Handle missing priceRange (like in your bookmark API response)
+    const hasPrice = event.priceRange && event.priceRange.min !== undefined;
+    const price = hasPrice 
+      ? (event.priceRange.min === 0 ? "Free" : `₦ ${event.priceRange.min.toLocaleString()}`)
+      : "Free";
+
     return {
       id: event.id,
       title: event.title,
@@ -121,17 +181,18 @@ const DiscoverEvents = () => {
         day: 'numeric'
       }),
       location: `${event.venue}, ${event.city}`,
-      price: event.priceRange.min === 0 ? "Free" : `₦ ${event.priceRange.min.toLocaleString()}`,
+      price: price,
       image: imageUrl, // Use the processed image URL
-      isPaid: event.priceRange.min > 0,
+      isPaid: hasPrice ? event.priceRange.min > 0 : false,
       isFeatured: event.isFeatured,
       isVirtual: event.isVirtual,
       venue: event.venue,
       city: event.city,
       state: event.state,
       country: event.country,
-      priceRange: event.priceRange,
-      ticketTypesCount: event.ticketTypesCount
+      priceRange: event.priceRange || { min: 0, max: 0 },
+      ticketTypesCount: event.ticketTypesCount,
+      isBookmarked: bookmarkedEventIds.has(event.id) // Check if event is bookmarked
     };
   };
 
@@ -151,6 +212,44 @@ const DiscoverEvents = () => {
       navigate(`/dashboard/event/${eventId}`);
     } else {
       navigate(`/discover-events/${eventId}`);
+    }
+  };
+
+  const handleBookmarkClick = async (e, eventId, isBookmarked) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!access_token) {
+      console.log('User not authenticated');
+      // You can add a toast notification here
+      return;
+    }
+
+    if (bookmarkingEvents.has(eventId)) {
+      // Already processing this event
+      return;
+    }
+
+    // Add to loading set
+    setBookmarkingEvents(prev => new Set(prev).add(eventId));
+
+    try {
+      if (isBookmarked) {
+        // Remove bookmark
+        await removeBookmarkMutation.mutateAsync({ 
+          eventId, 
+          accessToken: access_token 
+        });
+      } else {
+        // Add bookmark
+        await addBookmarkMutation.mutateAsync({ 
+          eventId, 
+          accessToken: access_token 
+        });
+      }
+    } catch (error) {
+      console.error('Bookmark operation failed:', error);
+      // Error handling is done in the mutation callbacks
     }
   };
 
@@ -190,8 +289,6 @@ const DiscoverEvents = () => {
   return (
     <div className="bg-white py-16 px-4">
       <div className="max-w-7xl mx-auto">
-
-
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -304,9 +401,28 @@ const DiscoverEvents = () => {
                           <span className="text-xs font-medium">Virtual</span>
                         </div>
                       )}
-                      {/* Bookmark Icon */}
-                      <div className="w-[32px] h-[32px] bg-[rgba(255,255,255,0.4)] absolute top-4 right-4 rounded-[8px] flex items-center justify-center">
-                        <img src="/assets/book-saved.png" alt="" />
+                      {/* Bookmark Button - Your existing button with conditional styling */}
+                      <div 
+                        className={`w-[32px] h-[32px] absolute top-4 right-4 rounded-[8px] flex items-center justify-center cursor-pointer transition-all duration-200 ${
+                          formattedEvent.isBookmarked 
+                            ? 'bg-purple-600' // bg-primary equivalent 
+                            : 'bg-[rgba(255,255,255,0.4)]'
+                        } ${bookmarkingEvents.has(event.id) ? 'opacity-50' : 'hover:bg-purple-600'}`}
+                        onClick={(e) => handleBookmarkClick(e, event.id, formattedEvent.isBookmarked)}
+                        title={formattedEvent.isBookmarked ? "Remove from saved events" : "Save event"}
+                      >
+                        {bookmarkingEvents.has(event.id) ? (
+                          // Loading spinner
+                          <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        ) : (
+                          <img 
+                            src="/assets/book-saved.png" 
+                            alt="Bookmark" 
+                            className={`transition-opacity duration-200 ${
+                              formattedEvent.isBookmarked ? 'opacity-100' : 'opacity-70'
+                            }`}
+                          />
+                        )}
                       </div>
                     </div>
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { eventsAPI } from '../Services/api'; // ⚠️ Make sure this path matches your folder structure
 
 // Query keys for cache management
@@ -69,6 +69,57 @@ export const useEvent = (eventId, options = {}) => {
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
     enabled: !!eventId, // Only run query if eventId exists
+    ...options,
+  });
+};
+
+/**
+ * Hook to fetch payment methods
+ * @param {Object} options - React Query options
+ */
+export const usePaymentMethods = (options = {}) => {
+  return useQuery({
+    queryKey: ['paymentMethods'],
+    queryFn: eventsAPI.getPaymentMethods,
+    staleTime: 30 * 60 * 1000, // 30 minutes (payment methods change less frequently)
+    ...options,
+  });
+};
+
+/**
+ * Hook to fetch saved events (bookmarks) with authentication
+ * @param {Object} params - Filter parameters (page, limit, etc.)
+ * @param {string} accessToken - User's access token from Redux
+ * @param {Object} options - React Query options
+ */
+export const useSavedEvents = (params = {}, accessToken, options = {}) => {
+  return useQuery({
+    queryKey: ['savedEvents', params, accessToken],
+    queryFn: () => eventsAPI.getSavedEvents(params, accessToken),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!accessToken, // Only run query if user is authenticated
+    ...options,
+  });
+};
+
+/**
+ * Hook to add a bookmark (save an event)
+ * @param {Object} options - React Query mutation options
+ */
+export const useAddBookmark = (options = {}) => {
+  return useMutation({
+    mutationFn: ({ eventId, accessToken }) => eventsAPI.addBookmark(eventId, accessToken),
+    ...options,
+  });
+};
+
+/**
+ * Hook to remove a bookmark (unsave an event)
+ * @param {Object} options - React Query mutation options
+ */
+export const useRemoveBookmark = (options = {}) => {
+  return useMutation({
+    mutationFn: ({ eventId, accessToken }) => eventsAPI.removeBookmark(eventId, accessToken),
     ...options,
   });
 };

@@ -49,6 +49,7 @@ function PurchaseTicket({ isOpen, onClose, eventData }) {
   const getTicketData = () => ({
     eventId: eventData?.id,
     ticketType: selectedTicket,
+    title: eventData?.title,
     quantity: quantity,
     total: calculateTotal(),
     ticketDetails: ticketTypes.find(t => t.id === selectedTicket)
