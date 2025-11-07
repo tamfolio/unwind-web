@@ -124,6 +124,22 @@ export const useRemoveBookmark = (options = {}) => {
   });
 };
 
+/**
+ * Hook to fetch user tickets with authentication
+ * @param {Object} params - Filter parameters (page, limit, status, etc.)
+ * @param {string} accessToken - User's access token from Redux
+ * @param {Object} options - React Query options
+ */
+export const useTickets = (params = {}, accessToken, options = {}) => {
+  return useQuery({
+    queryKey: ['tickets', params, accessToken],
+    queryFn: () => eventsAPI.getTickets(params, accessToken),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!accessToken, // Only run query if user is authenticated
+    ...options,
+  });
+};
+
 export const useEventsWithPagination = (initialFilters = {}) => {
   const [filters, setFilters] = useState({
     page: 1,

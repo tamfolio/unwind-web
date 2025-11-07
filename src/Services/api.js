@@ -313,5 +313,124 @@ export const eventsAPI = {
       console.error('💥 Error in removeBookmark:', error);
       throw error;
     }
+  },
+
+  // Get dashboard summary with authentication
+  getDashboardSummary: async (accessToken) => {
+    console.log('📊 getDashboardSummary called');
+    console.log('🔑 Access token provided:', !!accessToken);
+    
+    if (!accessToken) {
+      throw new Error('Access token is required for fetching dashboard summary');
+    }
+
+    const url = `${API_BASE_URL}/attendees/dashboard/summary`;
+    
+    console.log('🌐 Making dashboard summary API call to:', url);
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('📡 Dashboard summary response status:', response.status);
+      console.log('📡 Dashboard summary response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Dashboard summary API Error:', errorText);
+        
+        if (response.status === 401) {
+          throw new Error('Authentication failed - token may be expired');
+        }
+        
+        throw new Error(`Failed to fetch dashboard summary: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Dashboard summary API Response:', result);
+      
+      return result;
+    } catch (error) {
+      console.error('💥 Error in getDashboardSummary:', error);
+      throw error;
+    }
+  },
+
+  // Get user tickets with authentication and pagination
+  getTickets: async (params = {}, accessToken) => {
+    console.log('🎫 getTickets called with params:', params);
+    console.log('🔑 Access token provided:', !!accessToken);
+    
+    if (!accessToken) {
+      throw new Error('Access token is required for fetching tickets');
+    }
+
+    const defaultParams = {
+      page: 1,
+      limit: 10
+    };
+
+    const queryParams = { ...defaultParams, ...params };
+    console.log('📋 Tickets query params after merge:', queryParams);
+    
+    // Remove undefined/null values
+    const cleanParams = Object.entries(queryParams)
+      .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+      .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+    console.log('🧹 Clean tickets params:', cleanParams);
+
+    const searchParams = new URLSearchParams(cleanParams);
+    const url = `${API_BASE_URL}/attendees/tickets?${searchParams}`;
+    
+    console.log('🌐 Making tickets API call to:', url);
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('📡 Tickets response status:', response.status);
+      console.log('📡 Tickets response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Tickets API Error:', errorText);
+        
+        if (response.status === 401) {
+          throw new Error('Authentication failed - token may be expired');
+        }
+        
+        throw new Error(`Failed to fetch tickets: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Tickets API Response:', result);
+      console.log('📊 Tickets in response:', result.data?.length || 0);
+      console.log('📄 Tickets meta:', result.meta);
+      
+      // Return in a format that matches the expected structure
+      const formattedResponse = {
+        tickets: result.data || [],
+        pagination: result.meta || {},
+        total: result.meta?.total || 0,
+        totalPages: result.meta?.totalPages || 1,
+        currentPage: result.meta?.page || 1,
+      };
+      
+      console.log('🔄 Formatted tickets response:', formattedResponse);
+      
+      return formattedResponse;
+    } catch (error) {
+      console.error('💥 Error in getTickets:', error);
+      throw error;
+    }
   }
 };
