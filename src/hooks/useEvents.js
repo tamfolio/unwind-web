@@ -140,6 +140,28 @@ export const useTickets = (params = {}, accessToken, options = {}) => {
   });
 };
 
+/**
+ * Hook to purchase tickets
+ * @param {Object} options - React Query mutation options
+ */
+export const usePurchaseTickets = (options = {}) => {
+  return useMutation({
+    mutationFn: ({ purchaseData, accessToken }) => eventsAPI.purchaseTickets(purchaseData, accessToken),
+    ...options,
+  });
+};
+
+/**
+ * Hook to verify payment
+ * @param {Object} options - React Query mutation options
+ */
+export const useVerifyPayment = (options = {}) => {
+  return useMutation({
+    mutationFn: ({ reference, accessToken }) => eventsAPI.verifyPayment(reference, accessToken),
+    ...options,
+  });
+};
+
 export const useEventsWithPagination = (initialFilters = {}) => {
   const [filters, setFilters] = useState({
     page: 1,

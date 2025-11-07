@@ -25,6 +25,7 @@ import MyTickets from "./Components/App/Dashboard/Attendee/Components/MyTickets"
 import Support from "./Components/App/Dashboard/Attendee/Components/Support";
 import Notifications from "./Components/App/Dashboard/Attendee/Components/Notifications";
 import Profile from "./Components/App/Dashboard/Attendee/Components/Profile/Profile";
+import PaymentCallback from "./Components/App/Dashboard/Attendee/Components/Modals/PaymentCallback";
 
 function App() {
   const userData = useSelector((state) => state.user?.currentUser?.user);
@@ -43,6 +44,9 @@ function App() {
           path="/verification-successful"
           element={<VerificationSuccess />}
         />
+
+        {/* Payment callback route - ADD THIS ROUTE */}
+        <Route path="/payment/paystack/callback" element={<PaymentCallback />} />
 
         {/* Dashboard routes */}
         <Route

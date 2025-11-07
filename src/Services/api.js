@@ -432,5 +432,101 @@ export const eventsAPI = {
       console.error('💥 Error in getTickets:', error);
       throw error;
     }
+  },
+
+  // Purchase tickets
+  purchaseTickets: async (purchaseData, accessToken) => {
+    console.log('🛒 purchaseTickets called with data:', purchaseData);
+    console.log('🔑 Access token provided:', !!accessToken);
+    
+    if (!accessToken) {
+      throw new Error('Access token is required for purchasing tickets');
+    }
+
+    const url = `${API_BASE_URL}/events/tickets/purchase`;
+    
+    console.log('🌐 Making purchase tickets API call to:', url);
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(purchaseData)
+      });
+      
+      console.log('📡 Purchase tickets response status:', response.status);
+      console.log('📡 Purchase tickets response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Purchase tickets API Error:', errorText);
+        
+        if (response.status === 401) {
+          throw new Error('Authentication failed - token may be expired');
+        }
+        
+        throw new Error(`Failed to purchase tickets: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Purchase tickets API Response:', result);
+      
+      return result;
+    } catch (error) {
+      console.error('💥 Error in purchaseTickets:', error);
+      throw error;
+    }
+  },
+
+  // Verify payment
+  verifyPayment: async (reference, accessToken) => {
+    console.log('✅ verifyPayment called with reference:', reference);
+    console.log('🔑 Access token provided:', !!accessToken);
+    
+    if (!accessToken) {
+      throw new Error('Access token is required for verifying payment');
+    }
+
+    if (!reference) {
+      throw new Error('Payment reference is required');
+    }
+
+    const url = `${API_BASE_URL}/events/tickets/verify/${reference}`;
+    
+    console.log('🌐 Making verify payment API call to:', url);
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('📡 Verify payment response status:', response.status);
+      console.log('📡 Verify payment response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Verify payment API Error:', errorText);
+        
+        if (response.status === 401) {
+          throw new Error('Authentication failed - token may be expired');
+        }
+        
+        throw new Error(`Failed to verify payment: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Verify payment API Response:', result);
+      
+      return result;
+    } catch (error) {
+      console.error('💥 Error in verifyPayment:', error);
+      throw error;
+    }
   }
 };
